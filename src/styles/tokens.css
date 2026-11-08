@@ -13,10 +13,11 @@
   /* Mobile WebKit intro bleed — taller than any status/toolbar (Kelvin Man). */
   --intro-safari-top: 100px;
   --intro-safari-bottom: 160px;
-  /* Texture urls are set from Layout with Astro base for GitHub Pages. */
-  --material-clay: none;
-  --material-stone: none;
-  --hero-stone: none;
+  /* Absolute under Astro `base` so GitHub Pages and local preview both resolve. */
+  --material-clay: url("/naz-nail-lounge/textures/terracotta-plaster.webp");
+  --material-stone: url("/naz-nail-lounge/textures/ivory-travertine.webp");
+  --hero-stone: url("/naz-nail-lounge/textures/hero-sunlit-stone.webp");
+  --intro-grain: url("/naz-nail-lounge/textures/intro-grain.svg");
   --arch-metal: linear-gradient(135deg,#f0d7a0 0%,#bf9352 28%,#805326 58%,#d7b678 100%);
   --muted: #c4b69f;
   --mutedOnLight: #3e4135;
@@ -42,4 +43,10 @@
   --fs-caption: 19px;
   --section-y: clamp(64px,7vw,112px);
 }
-@media(max-width:767px){:root{--header-row-h:76px;--pad-x:max(24px,env(safe-area-inset-left,0px),env(safe-area-inset-right,0px));}}
+@media(max-width:767px){:root{
+  --header-row-h:76px;
+  --pad-x:max(24px,env(safe-area-inset-left,0px),env(safe-area-inset-right,0px));
+  --material-clay:url("/naz-nail-lounge/textures/terracotta-plaster-mobile.webp");
+  --material-stone:url("/naz-nail-lounge/textures/ivory-travertine-mobile.webp");
+  --hero-stone:url("/naz-nail-lounge/textures/hero-sunlit-stone-mobile.webp");
+}}

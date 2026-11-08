@@ -25,21 +25,6 @@ const {
   theme = 'dark',
   nav = 'home',
 } = Astro.props;
-
-const base = import.meta.env.BASE_URL;
-const textureCss = `
-:root{
-  --material-clay:url("${base}textures/terracotta-plaster.webp");
-  --material-stone:url("${base}textures/ivory-travertine.webp");
-  --hero-stone:url("${base}textures/hero-sunlit-stone.webp");
-  --intro-grain:url("${base}textures/intro-grain.svg");
-}
-@media(max-width:767px){:root{
-  --material-clay:url("${base}textures/terracotta-plaster-mobile.webp");
-  --material-stone:url("${base}textures/ivory-travertine-mobile.webp");
-  --hero-stone:url("${base}textures/hero-sunlit-stone-mobile.webp");
-}}
-`;
 ---
 
 <!doctype html>
@@ -53,7 +38,6 @@ const textureCss = `
     <link rel="preload" href={poiretLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={poiretCyrillic} as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
-    <style is:global set:html={textureCss}></style>
     <ClientRouter fallback="swap" />
     <script is:inline>
       (() => {
