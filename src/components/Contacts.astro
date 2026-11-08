@@ -1,0 +1,24 @@
+---
+import { site } from '../data/site';
+
+interface Props { theme?: 'dark' | 'cream' }
+const { theme = 'dark' } = Astro.props;
+const phone = site.phones[0];
+const entranceNote = site.addressNote.charAt(0).toUpperCase() + site.addressNote.slice(1);
+---
+
+<section class:list={['contacts', `contacts-${theme}`]} id="booking" aria-labelledby="contacts-title" data-reveal>
+  <div class="wrap contacts-layout">
+    <div class="contacts-location" data-reveal-item>
+      <p class="eyebrow">Контакты · {site.city}</p>
+      <h2 class="contacts-title" id="contacts-title">{site.address.replace(/^ул\.\s*/, '')}</h2>
+      <p class="contacts-visit">{entranceNote}<br />{site.hoursNote}</p>
+      <a class="contacts-route" href={site.map} target="_blank" rel="noopener noreferrer">Открыть в 2ГИС</a>
+    </div>
+    <div class="contacts-reach" data-reveal-item>
+      <p class="contacts-label">Телефон салона</p>
+      <a class="contacts-phone" href={phone.href}>{phone.label}</a>
+      <a class="contacts-social" href={site.vk.href} target="_blank" rel="noopener noreferrer">ВКонтакте</a>
+    </div>
+  </div>
+</section>

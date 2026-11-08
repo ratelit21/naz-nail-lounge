@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+*.log
+
+# Local agent / art-direction working files — not part of the published site
+AGENTS.md
+studio/
+*.zip

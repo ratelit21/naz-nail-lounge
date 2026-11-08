@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets';
+import heroScene from '../assets/photos/campaign-portrait.jpg';
+import { copy } from '../data/site';
+---
+
+<section class="hero" aria-labelledby="hero-brand">
+  <div class="hero-copy">
+    <p class="eyebrow hero-animate" data-page-part>Уфа · Аксакова, 18</p>
+    <p class="hero-brand hero-animate" id="hero-brand" data-page-part>
+      NAZ
+      <span class="hero-sub">Nail Lounge</span>
+    </p>
+    <h1 class="hero-headline hero-animate" data-page-part>{copy.heroHeadline}</h1>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-arch" data-hero-scale data-page-visual>
+      <div class="hero-arch-inner">
+        <Image
+          id="hero-image"
+          class="hero-img"
+          src={heroScene}
+          alt="Имиджевый кадр NAZ: медный шёлк и маникюр в оттенке каштана"
+          widths={[800, 1200, 1600]}
+          sizes="(max-width: 767px) 100vw, 66vw"
+          quality={80}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </div>
+    </div>
+  </div>
+</section>

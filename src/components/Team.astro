@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import team01 from '../assets/photos/team-01.jpg';
+import team02 from '../assets/photos/team-02.jpg';
+import team03 from '../assets/photos/team-03.jpg';
+import team04 from '../assets/photos/team-04.jpg';
+import team05 from '../assets/photos/team-05.jpg';
+import { copy, teamSlots } from '../data/site';
+
+const portraits = [team01, team02, team03, team04, team05];
+---
+
+<section class="team-band" id="team" aria-labelledby="team-title" data-reveal data-team>
+  <div class="team-scene" data-team-stage>
+
+
+    <div class="team-heading" data-team-copy>
+      <p class="eyebrow">{copy.teamEyebrow}</p>
+      <h2 class="team-title" id="team-title">{copy.teamTitle}</h2>
+      <p class="team-disclosure">Концепт: AI-портреты и условные имена</p>
+    </div>
+
+    <ul class="team-cast" aria-label="Временные портреты мастеров">
+      {teamSlots.map((slot, index) => (
+        <li class:list={['team-person', `team-person-${index + 1}`]} data-team-person>
+          <div class="team-person-reveal" data-team-reveal>
+          <figure class="team-person-frame">
+            <Image
+              src={portraits[index]}
+              alt={`Временный AI-портрет: ${slot.name}, ${slot.role}`}
+              widths={[320, 480, 720]}
+              sizes="(max-width:767px) 42vw, 18vw"
+              quality={76}
+              loading="eager"
+              fetchpriority="low"
+              decoding="async"
+            />
+          </figure>
+          <p class="team-person-name">{slot.name}</p>
+          <p class="team-person-role">{slot.role}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

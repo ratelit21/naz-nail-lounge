@@ -1,0 +1,45 @@
+:root {
+  --canvas: #08251f;
+  --canvasDeep: #061c18;
+  --surface: #12372d;
+  --cream: #eee1ce;
+  --creamWarm: #f5ebdc;
+  --text: #f3e8d8;
+  --textOnLight: #12372d;
+  --intro-center: #d7b192;
+  /* Solid Safari chrome fallback: average of clay texture top/bottom edge bands. */
+  --intro-edge: #b05e32;
+  --intro-text: #08251f;
+  /* Mobile WebKit intro bleed — taller than any status/toolbar (Kelvin Man). */
+  --intro-safari-top: 100px;
+  --intro-safari-bottom: 160px;
+  /* Texture urls are set from Layout with Astro base for GitHub Pages. */
+  --material-clay: none;
+  --material-stone: none;
+  --hero-stone: none;
+  --arch-metal: linear-gradient(135deg,#f0d7a0 0%,#bf9352 28%,#805326 58%,#d7b678 100%);
+  --muted: #c4b69f;
+  --mutedOnLight: #3e4135;
+  --terracotta: #75432f;
+  --accent: #c59b65;
+  --accentHover: #dfbb88;
+  --border: rgba(221,187,136,.55);
+  --border-soft: rgba(243,232,216,.18);
+  --border-on-light: rgba(18,55,45,.2);
+  --focus: #c59b65;
+  --font-display: 'Poiret One', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Tenor Sans', 'Helvetica Neue', Arial, sans-serif;
+  --header-row-h: 88px;
+  --header-h: calc(var(--header-row-h) + env(safe-area-inset-top,0px));
+  --pad-x: max(clamp(24px,4.5vw,80px),env(safe-area-inset-left,0px),env(safe-area-inset-right,0px));
+  --pad-x-right: var(--pad-x);
+  --max: 1600px;
+  --ease-out: cubic-bezier(.22,1,.36,1);
+  --fs-body: 17px;
+  --fs-nav: 16px;
+  --fs-cta: 17px;
+  --fs-label: 14px;
+  --fs-caption: 19px;
+  --section-y: clamp(64px,7vw,112px);
+}
+@media(max-width:767px){:root{--header-row-h:76px;--pad-x:max(24px,env(safe-area-inset-left,0px),env(safe-area-inset-right,0px));}}

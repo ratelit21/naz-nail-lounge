@@ -1,0 +1,104 @@
+---
+import '@fontsource/poiret-one/latin-400.css';
+import '@fontsource/poiret-one/cyrillic-400.css';
+import '@fontsource/tenor-sans/latin-400.css';
+import '@fontsource/tenor-sans/cyrillic-400.css';
+import poiretLatin from '@fontsource/poiret-one/files/poiret-one-latin-400-normal.woff2?url';
+import poiretCyrillic from '@fontsource/poiret-one/files/poiret-one-cyrillic-400-normal.woff2?url';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Preloader from '../components/Preloader.astro';
+import { ClientRouter } from 'astro:transitions';
+import { withBase } from '../lib/base';
+
+interface Props {
+  title?: string;
+  description?: string;
+  theme?: 'dark' | 'cream';
+  nav?: 'home' | 'atmosphere';
+}
+
+const {
+  title = 'Naz Nail Lounge — Уфа',
+  description = 'Приватный nail lounge в Уфе. Аксакова, 18, вход со двора. Маникюр, педикюр, брови. Запись онлайн.',
+  theme = 'dark',
+  nav = 'home',
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const textureCss = `
+:root{
+  --material-clay:url("${base}textures/terracotta-plaster.webp");
+  --material-stone:url("${base}textures/ivory-travertine.webp");
+  --hero-stone:url("${base}textures/hero-sunlit-stone.webp");
+  --intro-grain:url("${base}textures/intro-grain.svg");
+}
+@media(max-width:767px){:root{
+  --material-clay:url("${base}textures/terracotta-plaster-mobile.webp");
+  --material-stone:url("${base}textures/ivory-travertine-mobile.webp");
+  --hero-stone:url("${base}textures/hero-sunlit-stone-mobile.webp");
+}}
+`;
+---
+
+<!doctype html>
+<html lang="ru" data-theme={theme} data-page={nav}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="preload" href={poiretLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={poiretCyrillic} as="font" type="font/woff2" crossorigin />
+    <title>{title}</title>
+    <style is:global set:html={textureCss}></style>
+    <ClientRouter fallback="swap" />
+    <script is:inline>
+      (() => {
+      // Document-load boot only; client-route state is prepared before the swap.
+      if (window.nazDocumentBooted) return;
+      window.nazDocumentBooted = true;
+      const root = document.documentElement;
+      const navigation = performance.getEntriesByType('navigation')[0];
+      let internal = navigation?.type === 'back_forward';
+      try {
+        const pending = JSON.parse(sessionStorage.getItem('naz-internal-navigation') || 'null');
+        sessionStorage.removeItem('naz-internal-navigation');
+        if(navigation?.type !== 'reload' && pending?.path === location.pathname && Date.now()-pending.time < 10000) internal = true;
+      } catch {}
+      try {
+        if(navigation?.type === 'navigate' && document.referrer) {
+          const from = new URL(document.referrer);
+          if(from.origin === location.origin && from.pathname !== location.pathname) internal = true;
+        }
+      } catch {}
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if(root.dataset.page === 'home' && !internal) root.classList.add('intro-active');
+        else root.classList.add('page-entering');
+      }
+      window.nazSafetyTimer = setTimeout(() => {
+        root.classList.remove('intro-active', 'intro-revealing', 'intro-safari-bleed', 'page-entering');
+        root.dataset.pageEntry = 'complete';
+        document.querySelector('[data-image-stack]')?.setAttribute('style', 'display:none');
+        document.querySelectorAll('[data-page-part], [data-page-visual] img').forEach(el => {
+          ['opacity','transform','clip-path'].forEach(property => el.style.removeProperty(property));
+        });
+      }, root.classList.contains('intro-active') ? 11000 : 3200);
+      })();
+    </script>
+  </head>
+  <body class={`theme-${theme}`}>
+    <a class="skip-link" href="#main">К содержанию</a>
+    {nav === 'home' && <Preloader />}
+    <div data-site-content>
+      <Header nav={nav} theme={nav === 'home' ? 'cream' : theme} />
+      <slot />
+      <Footer theme={theme} />
+    </div>
+    <script>
+      import '../scripts/page.ts';
+    </script>
+  </body>
+</html>

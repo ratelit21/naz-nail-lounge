@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+import portrait from '../assets/photos/campaign-portrait.jpg';
+import botanical from '../assets/photos/campaign-botanical.jpg';
+import manicure from '../assets/photos/svc-manicure.jpg';
+import lounge from '../assets/photos/about-lounge.jpg';
+import design from '../assets/photos/svc-design.jpg';
+import velvet from '../assets/photos/mat-velvet.jpg';
+import stations from '../assets/photos/about-stations.jpg';
+import warm from '../assets/photos/mat-warm.jpg';
+const images = [portrait, manicure, botanical, lounge, design, velvet, stations, warm];
+---
+<div class="image-stack-entrance" data-image-stack role="status" aria-label="Открываем NAZ Nail Lounge">
+  <div class="entrance-backdrop" aria-hidden="true"></div>
+  <div class="entrance-scene" aria-hidden="true">
+    <div class="entrance-group" data-stack-group>
+      {images.map(src => <figure class="entrance-card" data-stack-card>
+        <Image src={src} alt="" widths={[192,384,768]} sizes="(min-width:53em) 384px, 288px" quality={76} loading="eager" />
+      </figure>)}
+    </div>
+  </div>
+  <div class="entrance-headings" data-stack-headings aria-hidden="true">
+    <p>NAZ</p><span>Nail Lounge</span>
+  </div>
+</div>

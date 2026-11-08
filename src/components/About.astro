@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+import lounge from '../assets/photos/about-stations.jpg';
+import { copy } from '../data/site';
+import { withBase } from '../lib/base';
+---
+
+<section class="about-bridge" id="about" aria-labelledby="about-title" data-reveal>
+  <div class="wrap about-bridge-inner">
+    <figure class="about-bridge-photo" data-reveal-item>
+      <Image
+        src={lounge}
+        alt="Зал NAZ: зелёные кресла, рабочие места и резные детали"
+        widths={[480, 800, 1200]}
+        sizes="(max-width:767px) 100vw, 50vw"
+        quality={78}
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    <div class="about-bridge-copy" data-reveal-item>
+      <p class="eyebrow">{copy.aboutEyebrow}</p>
+      <h2 class="about-bridge-title" id="about-title">{copy.aboutTitle}</h2>
+      <p class="about-bridge-body">{copy.aboutBody}</p>
+      <a class="cta-text about-more" href={withBase('/atmosfera/')} data-page-link>
+        <span>{copy.aboutLink}</span>
+        <span class="cta-text-sweep" aria-hidden="true">{copy.aboutLink}</span>
+      </a>
+    </div>
+  </div>
+</section>

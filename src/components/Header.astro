@@ -1,0 +1,80 @@
+---
+import { Menu, X } from '@lucide/astro';
+import { nav } from '../data/site';
+import { withBase } from '../lib/base';
+import Cta from './Cta.astro';
+
+interface Props {
+  nav?: 'home' | 'atmosphere';
+  theme?: 'dark' | 'cream';
+}
+
+const { theme = 'dark' } = Astro.props;
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const active = (href: string) => {
+  if (href.includes('#')) return false;
+  const path = withBase(href).replace(/\/+$/, '') || '/';
+  return path === currentPath;
+};
+
+const isCrossPage = (href: string) => {
+  const raw = (href.split('#')[0] || '/').replace(/\/+$/, '') || '/';
+  const path = withBase(raw).replace(/\/+$/, '') || '/';
+  return path !== currentPath;
+};
+---
+
+<header class:list={['site-header', `header-${theme}`]}>
+  <div class="wrap header-bar">
+    <a class="wordmark" href={withBase('/')} data-page-link>
+      <span class="wordmark-naz">NAZ</span>
+      <span class="wordmark-rest">Nail Lounge</span>
+    </a>
+
+    <nav class="nav-desktop" aria-label="Разделы">
+      {nav.map((item) =>
+        isCrossPage(item.href) ? (
+          <a class="nav-link" href={withBase(item.href)} data-page-link aria-current={active(item.href) ? 'page' : undefined}>{item.label}</a>
+        ) : (
+          <a class="nav-link" href={withBase(item.href)} aria-current={active(item.href) ? 'page' : undefined}>{item.label}</a>
+        )
+      )}
+    </nav>
+
+    <Cta class="header-cta cta-compact" />
+
+    <button
+      class="menu-toggle"
+      type="button"
+      data-menu-open
+      aria-expanded="false"
+      aria-controls="nav-panel"
+      aria-label="Открыть меню"
+    >
+      <Menu size={22} stroke-width={1.25} aria-hidden="true" />
+    </button>
+    <button
+      class="menu-toggle"
+      type="button"
+      data-menu-close
+      hidden
+      aria-expanded="true"
+      aria-controls="nav-panel"
+      aria-label="Закрыть меню"
+    >
+      <X size={22} stroke-width={1.25} aria-hidden="true" />
+    </button>
+  </div>
+</header>
+
+<div class:list={['nav-panel', `nav-panel-${theme}`]} id="nav-panel" data-nav-panel hidden>
+  <nav aria-label="Мобильная навигация">
+    {nav.map((item) =>
+      isCrossPage(item.href) ? (
+        <a class="nav-panel-link" href={withBase(item.href)} data-page-link aria-current={active(item.href) ? 'page' : undefined}>{item.label}</a>
+      ) : (
+        <a class="nav-panel-link" href={withBase(item.href)} aria-current={active(item.href) ? 'page' : undefined}>{item.label}</a>
+      )
+    )}
+  </nav>
+</div>

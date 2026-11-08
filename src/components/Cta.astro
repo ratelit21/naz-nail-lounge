@@ -1,0 +1,11 @@
+---
+import { BOOKING_URL, copy } from '../data/site';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<a class:list={['cta', className]} href={BOOKING_URL}>{copy.cta}</a>

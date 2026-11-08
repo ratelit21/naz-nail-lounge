@@ -1,0 +1,42 @@
+---
+import { Image } from 'astro:assets';
+import matLattice from '../assets/photos/mat-lattice.jpg';
+import matVelvet from '../assets/photos/mat-velvet.jpg';
+import matWarm from '../assets/photos/mat-warm.jpg';
+
+interface Props {
+  featured?: boolean;
+}
+
+const { featured = false } = Astro.props;
+
+const strips = [
+  { src: matLattice, alt: 'Резной гирих в зале NAZ', label: 'Фактура', pos: '50% 40%' },
+  { src: matVelvet, alt: 'Зелёный бархат и кофе в зале', label: 'Бархат', pos: '50% 55%' },
+  { src: matWarm, alt: 'Тёплый свет у окна салона', label: 'Свет', pos: '40% 50%' },
+];
+---
+
+<section
+  class:list={['materials', featured && 'materials-featured']}
+  id={featured ? 'materials' : undefined}
+  aria-label={featured ? 'Материалы пространства' : undefined}
+  aria-hidden={featured ? undefined : 'true'}
+  data-reveal={featured ? true : undefined}
+>
+  {strips.map((strip) => (
+    <figure class="materials-item" data-reveal-item={featured ? true : undefined}>
+      <Image
+        src={strip.src}
+        alt={featured ? strip.alt : ''}
+        widths={[480, 800, 1200]}
+        sizes={featured ? '(max-width:767px) 100vw, 34vw' : '(max-width: 767px) 90vw, 34vw'}
+        quality={72}
+        loading="lazy"
+        decoding="async"
+        style={`object-position: ${strip.pos}`}
+      />
+      {featured && <figcaption class="materials-caption">{strip.label}</figcaption>}
+    </figure>
+  ))}
+</section>

@@ -1,0 +1,10 @@
+---
+import { site } from '../data/site';
+interface Props { theme?: 'dark' | 'cream' }
+const { theme = 'dark' } = Astro.props;
+---
+<footer class:list={['site-footer', `footer-${theme}`]}>
+  <div class="footer-bar">
+    <p>© {new Date().getFullYear()} {site.name}</p>
+  </div>
+</footer>
