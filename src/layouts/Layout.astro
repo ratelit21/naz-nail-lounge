@@ -42,7 +42,7 @@ const [introPreviewDesktop, introPreviewMobile] = nav === 'home'
       previewFor('terracotta-plaster-mobile.webp'),
     ])
   : ['', ''];
-const introFirstPaintCSS = `html.intro-active{--intro-preview:url("data:image/webp;base64,${introPreviewDesktop}")}`
+const introFirstPaintCSS = `html.intro-active{--intro-preview:url("data:image/webp;base64,${introPreviewDesktop}");background:var(--intro-preview) center/cover no-repeat}`
   + `@media(max-width:767px){html.intro-active{--intro-preview:url("data:image/webp;base64,${introPreviewMobile}")}}`;
 ---
 
