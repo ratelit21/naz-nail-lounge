@@ -25,10 +25,10 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
-      - name: Check responsive layout and intro transition in Chromium
+      - name: Check responsive layout and intro transition in Chromium, Firefox, WebKit
         run: |
           npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium firefox webkit
           mkdir -p .qa-server
           ln -s "$PWD/dist" .qa-server/naz-nail-lounge
           python3 -m http.server 4321 --directory .qa-server > /tmp/naz-qa.log 2>&1 &
