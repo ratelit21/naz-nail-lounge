@@ -26,3 +26,45 @@
 .about-more::after{content:none}
 @media(hover:hover){.about-more:hover{background:transparent;color:var(--accentHover)}}
 .about-more:active{background:transparent}
+
+/* NAZ unified outlined button style 2026-11-09 */
+.site-header .header-cta{border-radius:2px}
+.site-header.header-cream.is-scrolled .header-cta,
+html.is-menu-open .site-header.header-cream .header-cta,
+.site-header:not(.header-cream).is-scrolled .header-cta,
+html.is-menu-open .site-header:not(.header-cream) .header-cta{
+  background:transparent;
+  color:inherit;
+  border-color:currentColor;
+}
+.hero-booking{
+  background:transparent;
+  transition:border-color .3s ease,box-shadow .3s ease;
+}
+@media(hover:hover){
+  .hero-booking:hover{
+    color:var(--canvas);
+    background:transparent;
+    border-color:var(--accent);
+    box-shadow:0 0 0 1px rgba(197,155,101,.66),0 0 13px rgba(197,155,101,.42),inset 0 0 8px rgba(197,155,101,.13);
+  }
+}
+.hero-booking:focus-visible{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px rgba(197,155,101,.66),0 0 13px rgba(197,155,101,.42);
+}
+.hero-booking:active{color:var(--canvas);background:transparent}
+.about-more{transition:border-color .3s ease,box-shadow .3s ease}
+@media(hover:hover){
+  .about-more:hover{
+    background:transparent;
+    color:var(--creamWarm);
+    border-color:var(--accent);
+    box-shadow:0 0 0 1px rgba(197,155,101,.66),0 0 13px rgba(197,155,101,.42),inset 0 0 8px rgba(197,155,101,.13);
+  }
+}
+.about-more:focus-visible{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px rgba(197,155,101,.66),0 0 13px rgba(197,155,101,.42);
+}
+@media(prefers-reduced-motion:reduce){.about-more{transition:none}}
