@@ -1,5 +1,4 @@
-/* First-screen booking on both pages: an editorial text action, not a pill.
-   One underline belongs to the lettering itself, never to the full link too. */
+/* First-screen booking on both pages: outlined, unfilled site-background action. */
 .hero-booking-slot{
   margin-top:clamp(30px,3.4vw,48px);
   align-self:flex-start;
@@ -9,15 +8,15 @@
 .hero-booking{
   display:inline-flex;
   align-items:center;
-  justify-content:flex-start;
+  justify-content:center;
   box-sizing:border-box;
   width:fit-content;
   min-width:200px;
   max-width:100%;
   min-height:60px;
-  padding:8px 0 10px;
-  border:0;
-  border-radius:0;
+  padding:12px 24px;
+  border:1px solid currentColor;
+  border-radius:2px;
   background:transparent;
   color:var(--canvas);
   font-family:var(--font-body);
@@ -27,7 +26,7 @@
   line-height:1.2;
   text-decoration:none;
   text-transform:none;
-  text-align:left;
+  text-align:center;
   opacity:1;
   cursor:pointer;
   touch-action:manipulation;
@@ -38,16 +37,15 @@
   font:inherit;
   letter-spacing:inherit;
   white-space:nowrap;
-  padding-bottom:7px;
-  border-bottom:1px solid currentColor;
-  transition:border-color .22s ease;
+  padding-bottom:0;
+  border-bottom:0;
 }
 .hero-booking::after{content:none}
 @media(hover:hover){
   .hero-booking:hover{color:var(--terracotta);background:transparent;opacity:1}
 }
 .hero-booking:focus-visible{outline:2px solid var(--canvas);outline-offset:5px}
-.hero-booking:active{color:var(--terracotta)}
+.hero-booking:active{color:var(--terracotta);background:transparent}
 @media(max-width:767px){
   .hero-booking-slot{margin-top:30px}
   .cream-hero-booking-slot{margin-top:29px}
