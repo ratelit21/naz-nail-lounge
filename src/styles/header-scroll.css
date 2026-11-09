@@ -15,7 +15,7 @@
   box-shadow: 0 5px 18px rgba(8,37,31,.055);
 }
 
-/* Booking: hairline outline initially, original solid NAZ green when scrolled. */
+/* Booking: outlined on hero; filled with the EXACT same cream as the scrolled header. */
 .site-header .header-cta {
   background: transparent;
   color: inherit;
@@ -25,8 +25,8 @@
 }
 .site-header.header-cream.is-scrolled .header-cta,
 html.is-menu-open .site-header.header-cream .header-cta {
-  background: var(--canvas);
-  color: var(--creamWarm);
+  background: var(--cream);
+  color: var(--textOnLight);
   border-color: var(--canvas);
 }
 .site-header:not(.header-cream).is-scrolled .header-cta,
@@ -75,21 +75,28 @@ main > .cream-hero {
   .site-header, .site-header .header-cta { transition:none; }
 }
 
-/* Atmosphere: only nav-label, booking-label and menu-icon color.
-   The wordmark, header background, outlines, shadows and layout stay unchanged. */
-html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .nav-link,
+
+/* Atmosphere hero photo: left/center is bright travertine, while the far
+   right is burgundy. Match label ink to the photographic area behind it.
+   The NAZ wordmark is deliberately left unchanged. */
+html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .nav-link {
+  color: var(--canvas);
+}
+@media (min-width:1024px) {
+  html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .nav-link:last-child {
+    color: var(--creamWarm);
+    text-shadow: 0 1px 3px rgba(6,28,24,.28);
+  }
+}
 html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .header-cta,
 html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .menu-toggle {
-  color: var(--creamWarm);
+  color: var(--canvas);
 }
+/* Once the bar becomes cream, all navigation ink is dark again. */
 html[data-page="atmosphere"] .site-header.header-cream.is-scrolled .nav-link,
 html[data-page="atmosphere"] .site-header.header-cream.is-scrolled .menu-toggle,
 html[data-page="atmosphere"].is-menu-open .site-header.header-cream .nav-link,
 html[data-page="atmosphere"].is-menu-open .site-header.header-cream .menu-toggle {
   color: var(--textOnLight);
-}
-/* The solid booking CTA retains its original cream text on a green fill.
-   While the menu is open before scrolling, it must not inherit light-on-cream. */
-html[data-page="atmosphere"].is-menu-open .site-header.header-cream .header-cta {
-  color: var(--creamWarm);
+  text-shadow: none;
 }

@@ -29,7 +29,7 @@ try {
           toggle:getComputedStyle(h.querySelector('[data-menu-open]')).color,
         };
       });
-      const expectedInitial=suffix ? 'rgb(245, 235, 220)' : 'rgb(18, 55, 45)';
+      const expectedInitial='rgb(18, 55, 45)';
       assert.equal(textColors.wordmark,'rgb(18, 55, 45)',width+' '+suffix+' original wordmark color preserved');
       assert.equal(textColors.button,expectedInitial,width+' '+suffix+' initial booking contrast');
       assert.equal(textColors.toggle,expectedInitial,width+' '+suffix+' initial menu contrast');
@@ -40,8 +40,16 @@ try {
         const h=document.querySelector('.site-header');
         return h.classList.contains('is-scrolled') &&
           getComputedStyle(h).backgroundColor==='rgb(238, 225, 206)' &&
-          getComputedStyle(h.querySelector('.header-cta')).backgroundColor==='rgb(8, 37, 31)';
+          getComputedStyle(h.querySelector('.header-cta')).backgroundColor==='rgb(238, 225, 206)';
       },null,{timeout:6000});
+      assert.equal(await page.locator('.site-header .header-cta').evaluate(e=>getComputedStyle(e).color),
+        'rgb(18, 55, 45)',width+' '+suffix+' scrolled button text');
+      assert.equal(await page.locator('.site-header .header-cta').evaluate(e=>getComputedStyle(e).borderTopColor),
+        'rgb(8, 37, 31)',width+' '+suffix+' scrolled button outline');
+      if(suffix && width>=1024){
+        const navColors=await page.locator('.site-header .nav-desktop .nav-link').evaluateAll(nodes=>nodes.map(e=>getComputedStyle(e).color));
+        assert.deepEqual(navColors.slice(0,3),Array(3).fill('rgb(8, 37, 31)'),width+' photo-lit navigation contrast');
+      }
       const scrolledLogoColor=await page.locator('.site-header .wordmark').evaluate(e=>getComputedStyle(e).color);
       assert.equal(scrolledLogoColor,'rgb(18, 55, 45)',width+' '+suffix+' scrolled logo contrast');
       assert.ok(Math.abs(await page.locator('.site-header').evaluate(e=>e.getBoundingClientRect().top))<=2,'Sticky header '+width);
