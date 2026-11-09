@@ -198,14 +198,9 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
   async function entrance() {
     try {
       if(reduced() || (!fullIntro && !assemble)) return;
-      if(fullIntro) {
-        const hero = body.querySelector<HTMLImageElement>('#hero-image');
-        const photos = [...(cover?.querySelectorAll<HTMLImageElement>('img') ?? [])];
-        await Promise.race([
-          Promise.all([document.fonts.ready,hero?.decode().catch(()=>{}),...photos.map(photo=>photo.decode().catch(()=>{}))]),
-          new Promise(resolve=>setTimeout(resolve,1000)),
-        ]);
-      } else if(routeTransition) {
+      // Start the image-stack animation without a static loading pause.
+      // Card images are already requested eagerly by the browser.
+      if(!fullIntro && routeTransition) {
         // Realtor pattern: short static snapshot dissolve, then real content.
         await routeTransition.finished.catch(()=>{});
       }
