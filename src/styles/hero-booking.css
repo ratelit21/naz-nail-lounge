@@ -25,17 +25,17 @@
   background: transparent;
   color: var(--canvas);
   text-decoration: none;
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-weight: 400;
-  line-height: 1.35;
+  line-height: 1.25;
   opacity: 1;
   isolation: isolate;
   cursor: pointer;
 }
 .hero-booking-label {
   display: block;
-  font-size: clamp(18px, 1.6vw, 22px);
-  letter-spacing: -.025em;
+  font-size: clamp(26px, 2.1vw, 31px);
+  letter-spacing: .018em;
   white-space: nowrap;
 }
 .hero-booking::after {
@@ -76,7 +76,7 @@
   .hero-booking-slot { margin-top: 30px; }
   .cream-hero-booking-slot { margin-top: 29px; }
   .hero-booking { min-height: 56px; padding-bottom: 14px; }
-  .hero-booking-label { font-size: 20px; }
+  .hero-booking-label { font-size: 28px; }
 }
 @media (max-width: 374px) {
   /* The slot is shrink-to-fit inside a flex column; give it a real touch target. */
