@@ -1,0 +1,76 @@
+/* Transparent navigation shell. The original NAZ palette stays unchanged. */
+.site-header, .site-header.header-cream {
+  background: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  transition: background-color .38s ease, border-color .38s ease, box-shadow .38s ease;
+}
+.site-header.is-scrolled, html.is-menu-open .site-header {
+  background: var(--canvas);
+  border-bottom-color: var(--border-soft);
+}
+.site-header.header-cream.is-scrolled, html.is-menu-open .site-header.header-cream {
+  background: var(--cream);
+  border-bottom-color: var(--border-on-light);
+  box-shadow: 0 5px 18px rgba(8,37,31,.055);
+}
+
+/* Booking: hairline outline initially, original solid NAZ green when scrolled. */
+.site-header .header-cta {
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+  opacity: 1;
+  transition: background-color .38s ease, color .38s ease, border-color .38s ease, opacity .2s ease;
+}
+.site-header.header-cream.is-scrolled .header-cta,
+html.is-menu-open .site-header.header-cream .header-cta {
+  background: var(--canvas);
+  color: var(--creamWarm);
+  border-color: var(--canvas);
+}
+.site-header:not(.header-cream).is-scrolled .header-cta,
+html.is-menu-open .site-header:not(.header-cream) .header-cta {
+  background: var(--creamWarm);
+  color: var(--canvas);
+  border-color: var(--creamWarm);
+}
+@media (hover:hover) {
+  .site-header .header-cta:hover { opacity: 1; }
+  .site-header.header-cream:not(.is-scrolled) .header-cta:hover {
+    background: var(--canvas);
+    color: var(--creamWarm);
+    border-color: var(--canvas);
+  }
+  .site-header.header-cream.is-scrolled .header-cta:hover { opacity: .75; }
+  .site-header:not(.header-cream):not(.is-scrolled) .header-cta:hover {
+    background: var(--creamWarm);
+    color: var(--canvas);
+  }
+}
+/* Move only the hero's painted background behind the sticky header.
+   Compensating height and padding retain the existing content layout. */
+main > .hero {
+  margin-top: calc(-1 * var(--header-h));
+  padding-top: var(--header-h);
+  min-height: calc(650px + var(--header-h));
+  height: min(calc(760px + var(--header-h)), 100svh);
+}
+main > .cream-hero {
+  margin-top: calc(-1 * var(--header-h));
+  padding-top: var(--header-h);
+  min-height: calc(610px + var(--header-h));
+  height: min(calc(720px + var(--header-h)), 100svh);
+}
+@media (min-width:768px) and (max-width:1100px) {
+  main > .hero { min-height: calc(660px + var(--header-h)); }
+}
+@media (max-width:1023px) {
+  main > .cream-hero { height:auto; min-height:0; }
+}
+@media (max-width:767px) {
+  main > .hero { height:auto; min-height:0; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .site-header, .site-header .header-cta { transition:none; }
+}
