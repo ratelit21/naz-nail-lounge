@@ -75,3 +75,131 @@ const frames = [
     </div>
   </div>
 </section>
+
+<style>
+  .svc-marquee[data-interactive] {
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .svc-marquee[data-interactive].is-dragging { cursor: grabbing; }
+  .svc-marquee[data-interactive] img {
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+</style>
+<script>
+  // Only the services photo rail is affected; other page animations stay unchanged.
+  (() => {
+    if (window.__nazServicesMarqueeReady) return;
+    window.__nazServicesMarqueeReady = true;
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let activeMarquee = null;
+    let teardownMarquee = () => {};
+    function mountServicesMarquee() {
+      const marquee = document.querySelector('[data-svc-marquee]');
+      if (marquee === activeMarquee && !reducedMotion.matches) return;
+      teardownMarquee();
+      if (!marquee || reducedMotion.matches) return;
+      const track = marquee.querySelector('.svc-track');
+      const firstSet = track?.querySelector('.svc-set');
+      if (!track || !firstSet) return;
+      let setWidth = firstSet.getBoundingClientRect().width;
+      if (!setWidth) return;
+      const controller = new AbortController();
+      const {signal} = controller;
+      const wrap = value => ((value % setWidth) + setWidth) % setWidth;
+      const cssTransform = getComputedStyle(track).transform;
+      let offset = 0;
+      // Preserve position when switching from the CSS fallback animation.
+      if (cssTransform.startsWith('matrix(')) {
+        offset = -Number(cssTransform.slice(7,-1).split(',')[4]) || 0;
+      } else if (cssTransform.startsWith('matrix3d(')) {
+        offset = -Number(cssTransform.slice(9,-1).split(',')[12]) || 0;
+      }
+      offset = wrap(offset);
+      let speed = setWidth / (innerWidth <= 767 ? 42 : 45);
+      let hovered = false;
+      let dragging = false;
+      let activePointer = null;
+      let previousX = 0;
+      let lastFrame = performance.now();
+      let frameId = 0;
+      track.style.animation = 'none';
+      marquee.dataset.interactive = '';
+      const draw = () => {
+        track.style.transform = 'translate3d(' + (-offset) + 'px,0,0)';
+      };
+      const animate = now => {
+        const dt = Math.min((now - lastFrame)/1000,0.05);
+        lastFrame = now;
+        const target = dragging || hovered ? 0 : setWidth / (innerWidth <= 767 ? 42 : 45);
+        speed += (target - speed) * (1 - Math.exp(-8 * dt));
+        if (!dragging) offset = wrap(offset + speed * dt);
+        draw();
+        frameId = requestAnimationFrame(animate);
+      };
+      marquee.addEventListener('pointerenter', event => {
+        if (event.pointerType === 'mouse') hovered = true;
+      }, {signal});
+      marquee.addEventListener('pointerleave', event => {
+        if (event.pointerType === 'mouse') hovered = false;
+      }, {signal});
+      marquee.addEventListener('pointerdown', event => {
+        if (dragging || !event.isPrimary || event.button !== 0) return;
+        dragging = true;
+        activePointer = event.pointerId;
+        previousX = event.clientX;
+        speed = 0;
+        marquee.classList.add('is-dragging');
+        if (event.pointerType === 'mouse') event.preventDefault();
+        marquee.setPointerCapture(event.pointerId);
+      }, {signal});
+      marquee.addEventListener('pointermove', event => {
+        if (!dragging || event.pointerId !== activePointer) return;
+        const dx = event.clientX - previousX;
+        previousX = event.clientX;
+        offset = wrap(offset - dx);
+        draw();
+      }, {signal});
+      const finishDrag = event => {
+        if (!dragging || event.pointerId !== activePointer) return;
+        dragging = false;
+        activePointer = null;
+        marquee.classList.remove('is-dragging');
+        if (event.pointerType !== 'mouse') hovered = false;
+        if (marquee.hasPointerCapture(event.pointerId)) marquee.releasePointerCapture(event.pointerId);
+      };
+      marquee.addEventListener('pointerup',finishDrag,{signal});
+      marquee.addEventListener('pointercancel',finishDrag,{signal});
+      marquee.addEventListener('lostpointercapture',finishDrag,{signal});
+      const resizeObserver = new ResizeObserver(() => {
+        const width = firstSet.getBoundingClientRect().width;
+        if (!width || width === setWidth) return;
+        offset = (offset / setWidth) * width;
+        setWidth = width;
+        draw();
+      });
+      resizeObserver.observe(firstSet);
+      draw();
+      frameId = requestAnimationFrame(animate);
+      activeMarquee = marquee;
+      teardownMarquee = () => {
+        cancelAnimationFrame(frameId);
+        resizeObserver.disconnect();
+        controller.abort();
+        marquee.classList.remove('is-dragging');
+        delete marquee.dataset.interactive;
+        track.style.removeProperty('animation');
+        track.style.removeProperty('transform');
+        activeMarquee = null;
+        teardownMarquee = () => {};
+      };
+    }
+    document.addEventListener('astro:page-load',mountServicesMarquee);
+    document.addEventListener('astro:before-swap',()=>teardownMarquee());
+    reducedMotion.addEventListener('change',mountServicesMarquee);
+    mountServicesMarquee();
+  })();
+</script>
