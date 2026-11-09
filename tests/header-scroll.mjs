@@ -48,7 +48,7 @@ try {
         'rgb(8, 37, 31)',width+' '+suffix+' scrolled button outline');
       if(suffix && width>=1024){
         const navColors=await page.locator('.site-header .nav-desktop .nav-link').evaluateAll(nodes=>nodes.map(e=>getComputedStyle(e).color));
-        assert.deepEqual(navColors.slice(0,3),Array(3).fill('rgb(8, 37, 31)'),width+' photo-lit navigation contrast');
+        assert.deepEqual(navColors.slice(0,3),Array(3).fill('rgb(18, 55, 45)'),width+' scrolled navigation contrast');
       }
       const scrolledLogoColor=await page.locator('.site-header .wordmark').evaluate(e=>getComputedStyle(e).color);
       assert.equal(scrolledLogoColor,'rgb(18, 55, 45)',width+' '+suffix+' scrolled logo contrast');
