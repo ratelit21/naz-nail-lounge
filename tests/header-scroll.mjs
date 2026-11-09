@@ -41,15 +41,14 @@ try {
           toggle:getComputedStyle(h.querySelector('[data-menu-open]')).color,
         };
       });
-      const expectedInitial=suffix ? 'rgb(255, 249, 240)' : 'rgb(18, 55, 45)';
+      const expectedInitial='rgb(18, 55, 45)';
       assert.equal(textColors.wordmark,'rgb(18, 55, 45)',width+' '+suffix+' original wordmark color preserved');
       assert.equal(textColors.button,expectedInitial,width+' '+suffix+' initial booking contrast');
-      assert.equal(textColors.toggle,suffix ? 'rgb(8, 37, 31)' : 'rgb(18, 55, 45)',
-        width+' '+suffix+' initial menu contrast');
+      assert.equal(textColors.toggle,'rgb(18, 55, 45)',width+' '+suffix+' initial menu contrast');
       if(suffix && width>=1024){
         const contact=page.locator('.nav-desktop .nav-link').last();
-        assert.equal(await contact.evaluate(e=>getComputedStyle(e).color),'rgb(255, 249, 240)',
-          width+' atmosphere contacts must be bright on burgundy');
+        assert.equal(await contact.evaluate(e=>getComputedStyle(e).color),'rgb(18, 55, 45)',
+          width+' atmosphere contacts match homepage palette');
         assert.notEqual(await contact.evaluate(e=>getComputedStyle(e).textShadow),'none',
           width+' atmosphere contacts need contrast shadow');
         assert.notEqual(await page.locator('.site-header .header-cta').evaluate(e=>getComputedStyle(e).textShadow),
@@ -69,6 +68,17 @@ try {
         width+' '+suffix+' missing consistent dark header shadow: '+JSON.stringify(introShadows));
       assert.ok(introShadows.every(shadow=>!shadow.includes('7px')),
         width+' '+suffix+' old excessive text glow still present');
+      if(suffix){
+        const artBounds=await page.locator('.cream-hero-art').evaluate(e=>{
+          const rect=e.getBoundingClientRect();
+          const nav=document.querySelector('.site-header').getBoundingClientRect();
+          return {artTop:rect.top,headerBottom:nav.bottom,viewport:window.innerWidth};
+        });
+        assert.ok(artBounds.artTop>=artBounds.headerBottom-2,
+          width+' flower must sit below header: '+JSON.stringify(artBounds));
+        if(width>=1024) assert.ok(artBounds.artTop>=artBounds.headerBottom+30,
+          width+' desktop photo must clear the links: '+JSON.stringify(artBounds));
+      }
       assert.ok(Math.abs(initial.headerTop)<=2 && Math.abs(initial.heroTop)<=2,width+' '+suffix+' hero overlap: '+JSON.stringify(initial));
       assert.ok(initial.html<=width+2 && initial.body<=width+2,width+' '+suffix+' overflow: '+JSON.stringify(initial));
       await page.evaluate(()=>window.scrollTo({top:500,behavior:'instant'}));
