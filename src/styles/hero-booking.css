@@ -1,63 +1,87 @@
-/* Hero booking is an editorial action, not a second navigation button.
-   The label has a calm hairline; hover only adjusts its color, without movement. */
-.hero-booking-slot{
-  margin-top:clamp(30px,3.4vw,48px);
-  align-self:flex-start;
-  max-width:100%;
+/* NAZ first-screen editorial CTA: original underline interaction preserved.
+   The Poiret One lettering and proportional tracking match the header. */
+.hero-booking-slot {
+  margin-top: clamp(30px, 3.4vw, 48px);
+  align-self: flex-start;
+  max-width: 100%;
 }
-.cream-hero-booking-slot{margin-top:clamp(31px,3.2vw,45px)}
-.hero-booking{
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-  justify-content:flex-start;
-  width:fit-content;
-  max-width:100%;
-  min-height:54px;
-  padding:7px 1px 12px 0;
-  border:0;
-  border-radius:0;
-  background:transparent;
-  color:var(--canvas);
-  font-family:var(--font-display);
-  font-weight:400;
-  line-height:1.2;
-  letter-spacing:.012em;
-  text-decoration:none;
-  isolation:isolate;
-  cursor:pointer;
-  transition:color .24s ease;
+.cream-hero-booking-slot {
+  margin-top: clamp(31px, 3.2vw, 45px);
 }
-.hero-booking-label{
-  display:block;
-  font-size:clamp(27px,2.2vw,31px);
-  white-space:nowrap;
+.hero-booking {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  width: min(100%, 234px);
+  min-width: 212px;
+  min-height: 62px;
+  padding: 12px 4px 17px;
+  border: 0;
+  border-bottom: 1px solid var(--canvas);
+  border-radius: 0;
+  background: transparent;
+  color: var(--canvas);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.25;
+  opacity: 1;
+  isolation: isolate;
+  cursor: pointer;
 }
-.hero-booking::after{
-  content:'';
-  position:absolute;
-  left:0;right:0;bottom:5px;
-  height:1px;
-  background:currentColor;
-  opacity:.75;
-  pointer-events:none;
-  transition:opacity .24s ease;
+.hero-booking-label {
+  display: block;
+  font-size: clamp(26px, 2.1vw, 31px);
+  letter-spacing: .018em;
+  white-space: nowrap;
 }
-@media(hover:hover){
-  .hero-booking:hover{color:var(--terracotta)}
-  .hero-booking:hover::after{opacity:1}
+.hero-booking::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 2px;
+  background: var(--terracotta);
+  transform: scaleX(.14);
+  transform-origin: left center;
+  transition: transform .46s var(--ease-out);
+  pointer-events: none;
 }
-.hero-booking:focus-visible{
-  outline:2px solid var(--canvas);
-  outline-offset:5px;
+@media (hover: hover) {
+  .hero-booking:hover {
+    background: transparent;
+    color: var(--canvas);
+    opacity: 1;
+  }
+  .hero-booking:hover::after {
+    transform: scaleX(1);
+  }
 }
-.hero-booking:active{color:var(--terracotta)}
-@media(max-width:767px){
-  .hero-booking-slot{margin-top:30px}
-  .cream-hero-booking-slot{margin-top:29px}
-  .hero-booking{min-height:52px}
-  .hero-booking-label{font-size:28px}
+.hero-booking:focus-visible {
+  outline: 2px solid var(--canvas);
+  outline-offset: 5px;
 }
-@media(prefers-reduced-motion:reduce){
-  .hero-booking,.hero-booking::after{transition:none}
+.hero-booking:focus-visible::after {
+  transform: scaleX(1);
+}
+.hero-booking:active {
+  color: var(--canvas);
+  opacity: 1;
+}
+@media (max-width: 767px) {
+  .hero-booking-slot { margin-top: 30px; }
+  .cream-hero-booking-slot { margin-top: 29px; }
+  .hero-booking { min-height: 56px; padding-bottom: 14px; }
+  .hero-booking-label { font-size: 28px; }
+}
+@media (max-width: 374px) {
+  /* The slot is shrink-to-fit inside a flex column; give it a real touch target. */
+  .hero-booking-slot { width: 216px; }
+  .hero-booking { width: 100%; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-booking::after { transition: none; }
 }
