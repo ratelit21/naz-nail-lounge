@@ -202,9 +202,12 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
     try {
       if(reduced() || (!fullIntro && !assemble)) return;
       if(fullIntro) {
-        // Terracotta cover is already painted by CSS. Warm cards only — do not
-        // block on hero/fonts (those sit under the cover / arrive mid-timeline).
-        await stack!.prepare();
+        const hero = body.querySelector<HTMLImageElement>('#hero-image');
+        const photos = [...(cover?.querySelectorAll<HTMLImageElement>('img') ?? [])];
+        await Promise.race([
+          Promise.all([document.fonts.ready,hero?.decode().catch(()=>{}),...photos.map(photo=>photo.decode().catch(()=>{}))]),
+          new Promise(resolve=>setTimeout(resolve,1000)),
+        ]);
       } else if(routeTransition) {
         // Realtor pattern: short static snapshot dissolve, then real content.
         await routeTransition.finished.catch(()=>{});

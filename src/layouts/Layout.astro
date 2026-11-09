@@ -37,9 +37,6 @@ const {
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <link rel="preload" href={poiretLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={poiretCyrillic} as="font" type="font/woff2" crossorigin />
-    {/* Solid terracotta paints first; clay texture ready before the cover swaps. */}
-    <link rel="preload" href={withBase('/textures/terracotta-plaster-mobile.webp')} as="image" type="image/webp" media="(max-width:767px)" />
-    <link rel="preload" href={withBase('/textures/terracotta-plaster.webp')} as="image" type="image/webp" media="(min-width:768px)" />
     <title>{title}</title>
     <ClientRouter fallback="swap" />
     <script is:inline>

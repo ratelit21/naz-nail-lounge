@@ -32,34 +32,8 @@ export class ImageStackEntrance {
     this.cards = [...element.querySelectorAll<HTMLElement>('[data-stack-card]')];
   }
 
-  /** Steady terracotta cover first; cards only after decode. Never tear the cover down mid-boot. */
-  async prepare() {
-    const root = document.documentElement;
-    root.classList.remove('intro-revealing');
-    // Keep the already-painted backdrop; only kill a leftover timeline.
-    this.timeline?.kill();
-    this.timeline = undefined;
-    gsap.set(this.element, {display:'block', visibility:'visible', opacity:1, pointerEvents:'none'});
-    this.armSafariBleed();
-    this.element.dataset.phase = 'waiting';
-    const photos = [...this.element.querySelectorAll<HTMLImageElement>('img')];
-    const decoded = () => photos.filter(photo => photo.complete && photo.naturalWidth > 0).length;
-    const waitDecode = Promise.all(photos.map(photo => photo.decode().catch(() => {})));
-    // Hold the clay cover until plates are real pixels — never start on empty flashes.
-    const deadline = Date.now() + 2800;
-    while(Date.now() < deadline) {
-      if(decoded() >= photos.length) break;
-      // Enough of the ring is ready; finish the rest during motion instead of stalling.
-      if(decoded() >= Math.max(5, photos.length - 2) && Date.now() > deadline - 900) break;
-      await Promise.race([
-        waitDecode,
-        new Promise<void>(resolve => setTimeout(resolve, 60)),
-      ]);
-      if(decoded() >= photos.length) break;
-    }
-  }
-
   play() {
+    this.hide();
     const desktop = matchMedia('(min-width:53em)').matches;
     const group = this.element.querySelector<HTMLElement>('[data-stack-group]')!;
     const headings = this.element.querySelector<HTMLElement>('[data-stack-headings]')!;
@@ -68,9 +42,9 @@ export class ImageStackEntrance {
     const sliceAngle = 2 * Math.PI / count;
     const root = document.documentElement;
     root.classList.remove('intro-revealing');
-    // Cover stays painted; measure live card size without opacity:0 flash.
-    gsap.set(this.element, {display:'block', visibility:'visible', opacity:1, pointerEvents:'none'});
-    if(!this.bleed) this.armSafariBleed();
+    // Layout must be live before reading card size — display:none reports 0.
+    gsap.set(this.element, {display:'block', visibility:'hidden', opacity:0});
+    this.armSafariBleed();
     void this.element.offsetHeight;
     const cardW = card.clientWidth || (desktop ? 128 : 96);
     const cardH = card.clientHeight || (desktop ? 192 : 144);
@@ -85,23 +59,22 @@ export class ImageStackEntrance {
     const breathMs = 1;
     const exitScale = 1.03;
     const titleBlur = desktop ? 60 : 28;
+    gsap.set(this.element, {visibility:'visible', opacity:1});
     gsap.set(group, {clearProps:'transform,filter'});
-    // Title stays off until the composing beat; cards stay at 0 until the timeline owns them.
-    gsap.set(headings, {opacity:0, filter:`blur(${titleBlur}px)`, visibility:'hidden'});
+    // Keep title/cards invisible until the timeline owns them — no static orange+NAZ flash.
+    gsap.set(headings, {opacity:0, filter:`blur(${titleBlur}px)`, visibility:'visible'});
     gsap.set(this.cards, {x:0, y:0, xPercent:-50, yPercent:-50, opacity:0, scale:1, rotateX:0, rotateY:0, rotation:0});
     const done = new Promise<void>(resolve => {this.settle = resolve;});
     this.escape = event => {if(event.key === 'Escape') this.hide();};
     addEventListener('keydown', this.escape);
     this.deadline = window.setTimeout(() => this.hide(), 12000);
     this.element.dataset.phase = 'assembling';
-    gsap.set(headings, {visibility:'visible'});
 
     // Codrops finite stages, then the same short living breath on every viewport.
-    // Start from opacity 0 so undecodeed frames never flash as blank plates.
     this.timeline = gsap.timeline({onComplete:() => this.complete()})
       .fromTo(this.cards, {
         y:innerHeight / 2 + cardH * 1.5,
-        rotateX:-180, opacity:0, scale:3,
+        rotateX:-180, opacity:.8, scale:3,
       }, {
         y:0, rotateX:0, opacity:1, scale:1, stagger:.1, duration:.5,
       })
