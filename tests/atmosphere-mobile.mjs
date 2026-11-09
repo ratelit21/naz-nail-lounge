@@ -62,12 +62,18 @@ for (const [engineName, engine] of Object.entries({chromium, firefox, webkit})) 
 
       const firstMaterial = page.locator('.materials-featured .materials-item').first();
       await firstMaterial.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(1100);
+      await page.waitForFunction(() => {
+        const el = document.querySelector('.materials-featured .materials-item');
+        return el && Number(getComputedStyle(el).opacity) >= 0.95;
+      }, null, {timeout: 6000});
       const firstOpacity = await firstMaterial.evaluate(el => getComputedStyle(el).opacity);
       assert.ok(Number(firstOpacity) >= 0.95, 'Material remains hidden: ' + firstOpacity);
       const interior = page.locator('.cream-balance-arch');
       await interior.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(1200);
+      await page.waitForFunction(() => {
+        const el = document.querySelector('.cream-balance-arch');
+        return el && Number(getComputedStyle(el).opacity) >= 0.95;
+      }, null, {timeout: 6000});
       const interiorOpacity = await interior.evaluate(el => getComputedStyle(el).opacity);
       assert.ok(Number(interiorOpacity) >= 0.95, 'Interior remains hidden: ' + interiorOpacity);
       await page.evaluate(() => window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
