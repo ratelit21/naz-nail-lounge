@@ -21,6 +21,13 @@ try {
       assert.equal(initial.header,'rgba(0, 0, 0, 0)',width+' '+suffix+' initial header');
       assert.equal(initial.button,'rgba(0, 0, 0, 0)',width+' '+suffix+' initial button');
       assert.ok(parseFloat(initial.border)>=1,width+' '+suffix+' outlined button');
+      // A hover must NOT add green (or any other fill) over a transparent header.
+      await page.locator('.site-header .header-cta').hover();
+      assert.equal(
+        await page.locator('.site-header .header-cta').evaluate(el => getComputedStyle(el).backgroundColor),
+        'rgba(0, 0, 0, 0)',
+        width+' '+suffix+' transparent-header booking hover must stay transparent'
+      );
       const textColors=await page.evaluate(()=>{
         const h=document.querySelector('.site-header');
         return {

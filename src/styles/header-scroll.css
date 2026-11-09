@@ -36,17 +36,13 @@ html.is-menu-open .site-header:not(.header-cream) .header-cta {
   border-color: var(--creamWarm);
 }
 @media (hover:hover) {
-  .site-header .header-cta:hover { opacity: 1; }
-  .site-header.header-cream:not(.is-scrolled) .header-cta:hover {
-    background: var(--canvas);
-    color: var(--creamWarm);
-    border-color: var(--canvas);
+  /* The transparent header always keeps an unfilled booking outline,
+     including hover. Apply hover feedback only once the header is solid. */
+  .site-header:not(.is-scrolled) .header-cta:hover {
+    background-color: transparent;
+    opacity: 1;
   }
-  .site-header.header-cream.is-scrolled .header-cta:hover { opacity: .75; }
-  .site-header:not(.header-cream):not(.is-scrolled) .header-cta:hover {
-    background: var(--creamWarm);
-    color: var(--canvas);
-  }
+  .site-header.is-scrolled .header-cta:hover { opacity: .75; }
 }
 /* Move only the hero's painted background behind the sticky header.
    Compensating height and padding retain the existing content layout. */
