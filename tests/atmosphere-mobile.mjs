@@ -21,6 +21,13 @@ for (const [engineName, engine] of Object.entries({chromium, firefox, webkit})) 
       await page.goto(base, {waitUntil: 'domcontentloaded'});
       await page.waitForFunction(() => document.documentElement.dataset.pageEntry === 'complete', null, {timeout: 12000});
       assert.ok(Math.abs(await page.evaluate(() => scrollY)) < 2, 'Home starts mid-page');
+      await page.evaluate(() => window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+      await page.waitForFunction(() => document.documentElement.classList.contains('chrome-bottom-dark'));
+      assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
+        'rgb(8, 37, 31)', 'Dark home footer must tint bottom Safari chrome dark');
+      await page.evaluate(() => window.scrollTo({top:0,behavior:'instant'}));
+      await page.waitForFunction(() => !document.documentElement.classList.contains('chrome-bottom-dark'));
+
       if (width <= 820) {
         await page.locator('[data-menu-open]').click();
         await page.locator('.nav-panel-link[href$="/atmosfera/"]').click();
