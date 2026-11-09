@@ -14,7 +14,7 @@ function syncHeader() {
     const footer = document.querySelector<HTMLElement>('.site-footer');
     // When the document ends above the iPhone toolbar, Safari uses the BODY
     // background-color below it. The fallback must match the dark footer.
-    if (footer && footer.getBoundingClientRect().top <= window.innerHeight - 24) {
+    if (footer?.classList.contains('footer-dark') && footer.getBoundingClientRect().top <= window.innerHeight - 24) {
       darkBottom = true;
     } else {
       const underToolbar = document.elementFromPoint(
@@ -22,7 +22,7 @@ function syncHeader() {
         Math.max(1, window.innerHeight - 6),
       );
       darkBottom = !!underToolbar?.closest(
-        '.site-footer,.services-band,.about-bridge,.contacts:not(.contacts-cream),.cream-balance',
+        '.site-footer:not(.footer-cream),.services-band,.about-bridge,.contacts:not(.contacts-cream),.cream-balance',
       );
     }
   }
