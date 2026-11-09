@@ -61,7 +61,7 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
   const boot = window as Window & {nazSafetyTimer?:number};
   if(boot.nazSafetyTimer) clearTimeout(boot.nazSafetyTimer);
   // Intro cards + soft hero assembly need a longer fail-open than assemble-only.
-  const safety = window.setTimeout(finish, fullIntro ? 11000 : 3200);
+  const safety = window.setTimeout(finish, fullIntro ? 15000 : 3200);
   if(fullIntro || assemble) {
     // Keep hero frozen under the stack / route snapshot; class may already be set by Layout.
     if(!fullIntro) root.classList.add('page-entering');

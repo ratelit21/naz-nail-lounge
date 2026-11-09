@@ -3,12 +3,20 @@ import { Image } from 'astro:assets';
 import svcManicure from '../assets/photos/svc-manicure-fill.jpg';
 import svcColor from '../assets/photos/svc-color-fill.jpg';
 import svcDesign from '../assets/photos/svc-design-fill.jpg';
+import processWork from '../assets/photos/process-work.jpg';
+import aboutStations from '../assets/photos/about-stations.jpg';
 import { copy } from '../data/site';
 
 const frames = [
-  { title: 'Молочное покрытие', alt: 'Маникюр с молочным покрытием', src: svcManicure, pos: '50% 35%' },
-  { title: 'Лиловое покрытие', alt: 'Лиловое покрытие на ногтях: работа NAZ', src: svcColor, pos: '40% 30%' },
-  { title: 'Графичный дизайн', alt: 'Контрастный маникюр: работа NAZ', src: svcDesign, pos: '50% 30%' },
+  { title: 'Молочное покрытие', alt: 'Маникюр с молочным покрытием', src: svcManicure, pos: '50% 42%' },
+  { title: 'Лиловое покрытие', alt: 'Лиловое покрытие на ногтях: работа NAZ', src: svcColor, pos: '48% 38%' },
+  { title: 'Графичный дизайн', alt: 'Контрастный маникюр: работа NAZ', src: svcDesign, pos: '52% 36%' },
+  { title: 'В работе', alt: 'Мастер выполняет аппаратный маникюр в NAZ', src: processWork, pos: '50% 40%' },
+  { title: 'Станции', alt: 'Рабочие станции маникюра в NAZ Nail Lounge', src: aboutStations, pos: '50% 45%' },
+  // Второй проход — лента плотнее на широком экране.
+  { title: 'Молочное покрытие', alt: 'Маникюр с молочным покрытием', src: svcManicure, pos: '50% 42%' },
+  { title: 'Лиловое покрытие', alt: 'Лиловое покрытие на ногтях: работа NAZ', src: svcColor, pos: '48% 38%' },
+  { title: 'Графичный дизайн', alt: 'Контрастный маникюр: работа NAZ', src: svcDesign, pos: '52% 36%' },
 ];
 ---
 
@@ -20,25 +28,50 @@ const frames = [
       <p class="services-lead">{copy.servicesLead}</p>
       <p class="services-note">{copy.servicesNote}</p>
     </header>
+  </div>
 
-    <div class="svc-strip" data-svc-strip role="group" aria-label="Реальные работы NAZ">
-      {frames.map((frame) => (
-        <figure class="svc-item" data-svc-item>
-          <div class="svc-frame">
-            <Image
-              src={frame.src}
-              alt={frame.alt}
-              widths={[360, 560, 800]}
-              sizes="(max-width: 767px) 70vw, 22vw"
-              quality={74}
-              loading="lazy"
-              decoding="async"
-              style={`object-position: ${frame.pos}`}
-            />
-          </div>
-          <figcaption class="svc-caption">{frame.title}</figcaption>
-        </figure>
-      ))}
+  <div class="svc-rail" data-reveal-item>
+    <div class="svc-marquee" data-svc-marquee role="group" aria-label="Реальные работы NAZ">
+      <div class="svc-track">
+        <div class="svc-set">
+          {frames.map((frame) => (
+            <figure class="svc-item">
+              <div class="svc-frame">
+                <Image
+                  src={frame.src}
+                  alt={frame.alt}
+                  widths={[360, 560, 800]}
+                  sizes="(max-width: 767px) 68vw, 280px"
+                  quality={74}
+                  loading="lazy"
+                  decoding="async"
+                  style={`object-position: ${frame.pos}`}
+                />
+              </div>
+              <figcaption class="svc-caption">{frame.title}</figcaption>
+            </figure>
+          ))}
+        </div>
+        <div class="svc-set" aria-hidden="true">
+          {frames.map((frame) => (
+            <figure class="svc-item">
+              <div class="svc-frame">
+                <Image
+                  src={frame.src}
+                  alt=""
+                  widths={[360, 560, 800]}
+                  sizes="(max-width: 767px) 68vw, 280px"
+                  quality={74}
+                  loading="lazy"
+                  decoding="async"
+                  style={`object-position: ${frame.pos}`}
+                />
+              </div>
+              <figcaption class="svc-caption">{frame.title}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
     </div>
   </div>
 </section>

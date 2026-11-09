@@ -59,8 +59,15 @@ const {
         }
       } catch {}
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        if(root.dataset.page === 'home' && !internal) root.classList.add('intro-active');
-        else root.classList.add('page-entering');
+        // Card intro once per browser profile; reload skips it. Clearing site data brings it back.
+        let introSeen = false;
+        try { introSeen = localStorage.getItem('naz-intro-seen') === '1'; } catch {}
+        if(root.dataset.page === 'home' && !internal && !introSeen) {
+          root.classList.add('intro-active');
+          try { localStorage.setItem('naz-intro-seen', '1'); } catch {}
+        } else {
+          root.classList.add('page-entering');
+        }
       }
       window.nazSafetyTimer = setTimeout(() => {
         root.classList.remove('intro-active', 'intro-revealing', 'intro-safari-bleed', 'page-entering');
@@ -69,7 +76,7 @@ const {
         document.querySelectorAll('[data-page-part], [data-page-visual] img').forEach(el => {
           ['opacity','transform','clip-path'].forEach(property => el.style.removeProperty(property));
         });
-      }, root.classList.contains('intro-active') ? 11000 : 3200);
+      }, root.classList.contains('intro-active') ? 15000 : 3200);
       })();
     </script>
   </head>
