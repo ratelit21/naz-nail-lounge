@@ -91,15 +91,26 @@ main > .cream-hero {
 html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .nav-link {
   color: var(--canvas);
 }
+/* Bright text over the burgundy image area, with a strong dark text
+   shadow so the letters remain legible when a copper highlight passes behind.
+   Keep the left-hand navigation and original NAZ wordmark dark. */
 @media (min-width:1024px) {
-  html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .nav-link:last-child {
-    color: var(--creamWarm);
-    text-shadow: 0 1px 3px rgba(6,28,24,.28);
+  html[data-page="atmosphere"]:not(.is-menu-open) .site-header.header-cream:not(.is-scrolled) .nav-link:last-child {
+    color: #fff9f0;
+    text-shadow: 0 1px 2px rgba(25,9,6,.95), 0 0 7px rgba(25,9,6,.85);
   }
 }
-html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .header-cta,
+html[data-page="atmosphere"]:not(.is-menu-open) .site-header.header-cream:not(.is-scrolled) .header-cta {
+  color: #fff9f0;
+  text-shadow: 0 1px 2px rgba(25,9,6,.95), 0 0 7px rgba(25,9,6,.85);
+}
 html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .menu-toggle {
   color: var(--canvas);
+}
+/* aria-current remains for screen readers. Only hover/focus gets an underline:
+   don't leave 'Атмосфера' permanently underlined after navigation. */
+.site-header .nav-desktop .nav-link[aria-current="page"]:not(:hover):not(:focus-visible)::after {
+  transform: scaleX(0);
 }
 /* Once the bar becomes cream, all navigation ink is dark again. */
 html[data-page="atmosphere"] .site-header.header-cream.is-scrolled .nav-link,
