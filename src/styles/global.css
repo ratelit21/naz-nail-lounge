@@ -192,12 +192,13 @@ html.reveal-armed [data-reveal]:not([data-revealed]) [data-team-copy]{
 /* Match the realtor's transparent fixed shell + absolutely painted image.
    WebKit color-extension heuristics can keep a sticky header's sampled color
    when a viewport-sized fixed popup appears: WebKit/WebKit PR #49187. */
-.entrance-backdrop{position:absolute;inset:0;z-index:0;background:var(--material-clay) center/cover,var(--intro-edge)}
+.entrance-backdrop{position:absolute;inset:0;z-index:0;background:var(--material-clay) center/cover,var(--intro-preview,linear-gradient(135deg,#c78b62,#aa5738)) center/cover,var(--intro-edge)}
 .image-stack-entrance::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:var(--intro-grain) repeat;background-size:150px 150px;opacity:.04;mix-blend-mode:multiply}
 .intro-active .image-stack-entrance{display:block;visibility:visible}
-/* Fallback solid for Safari chrome; texture lives on .entrance-backdrop. */
-html.intro-active{overflow:hidden;background:var(--intro-edge)}
-html.intro-active body{background:var(--intro-edge)}
+/* Use the same real texture everywhere, with an inlined photo placeholder
+   under the full-res layer. Do not expose an orange solid first frame. */
+html.intro-active{overflow:hidden;background:var(--material-clay) center/cover,var(--intro-preview,linear-gradient(135deg,#c78b62,#aa5738)) center/cover,var(--intro-edge)}
+html.intro-active body{background:var(--material-clay) center/cover,var(--intro-preview,linear-gradient(135deg,#c78b62,#aa5738)) center/cover,var(--intro-edge)}
 /* Reveal snaps root to cream so terracotta chrome does not linger into hero assembly. */
 html.intro-active.intro-revealing{background:var(--cream)}
 html.intro-active.intro-revealing body{background:transparent}
@@ -210,11 +211,11 @@ html.intro-active.intro-revealing body{background:transparent}
   @media (max-width:767px){
     html.intro-active.intro-safari-bleed{
       overflow:hidden;
-      background:var(--intro-edge);
+      background:var(--material-clay) center/cover,var(--intro-preview,linear-gradient(135deg,#c78b62,#aa5738)) center/cover,var(--intro-edge);
     }
     html.intro-active.intro-safari-bleed body{
       overflow:hidden;
-      background:var(--intro-edge);
+      background:var(--material-clay) center/cover,var(--intro-preview,linear-gradient(135deg,#c78b62,#aa5738)) center/cover,var(--intro-edge);
       min-height:calc(var(--intro-safari-top) + 100dvh + var(--intro-safari-bottom));
     }
     html.intro-active.intro-safari-bleed .image-stack-entrance{
