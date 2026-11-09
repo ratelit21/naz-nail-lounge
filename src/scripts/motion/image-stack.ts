@@ -60,10 +60,10 @@ export class ImageStackEntrance {
     const exitScale = 1.03;
     const titleBlur = desktop ? 60 : 28;
     gsap.set(this.element, {visibility:'visible', opacity:1});
-    gsap.set(group, {clearProps:'all'});
-    gsap.set(headings, {clearProps:'all'});
-    gsap.set(this.cards, {clearProps:'all'});
-    gsap.set(this.cards, {x:0, y:0, xPercent:-50, yPercent:-50, opacity:1});
+    gsap.set(group, {clearProps:'transform,filter'});
+    // Keep title/cards invisible until the timeline owns them — no static orange+NAZ flash.
+    gsap.set(headings, {opacity:0, filter:`blur(${titleBlur}px)`, visibility:'visible'});
+    gsap.set(this.cards, {x:0, y:0, xPercent:-50, yPercent:-50, opacity:0, scale:1, rotateX:0, rotateY:0, rotation:0});
     const done = new Promise<void>(resolve => {this.settle = resolve;});
     this.escape = event => {if(event.key === 'Escape') this.hide();};
     addEventListener('keydown', this.escape);
@@ -72,9 +72,11 @@ export class ImageStackEntrance {
 
     // Codrops finite stages, then the same short living breath on every viewport.
     this.timeline = gsap.timeline({onComplete:() => this.complete()})
-      .from(this.cards, {
+      .fromTo(this.cards, {
         y:innerHeight / 2 + cardH * 1.5,
-        rotateX:-180, stagger:.1, duration:.5, opacity:.8, scale:3,
+        rotateX:-180, opacity:.8, scale:3,
+      }, {
+        y:0, rotateX:0, opacity:1, scale:1, stagger:.1, duration:.5,
       })
       .set(this.cards, {transformOrigin:`center ${radius1 + cardH / 2}px`})
       .set(group, {transformStyle:'preserve-3d'})
@@ -92,7 +94,7 @@ export class ImageStackEntrance {
         duration:.5,
       })
       .to(this.cards, {rotateY:180, opacity:.92, duration:1}, '<')
-      .from(headings, {opacity:0, filter:`blur(${titleBlur}px)`, duration:1}, '<')
+      .to(headings, {opacity:1, filter:'blur(0px)', duration:1}, '<')
       .call(() => {this.element.dataset.phase = 'breathing';})
       .to(group, {rotation:breathTurn, duration:breathMs, ease:'none'})
       .to(this.cards[Math.floor(count * .25)], {rotateY:'+=180', duration:.55, ease:'power1.inOut'}, '<0.15')
