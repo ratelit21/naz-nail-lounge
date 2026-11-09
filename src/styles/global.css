@@ -213,7 +213,7 @@ html.intro-active body{background:var(--material-clay) center/cover,var(--intro-
       visibility: visible;
       width: 100%;
       height: calc(100dvh + 180px);
-      margin-bottom: calc(-1 * (100dvh + 180px));
+      margin-bottom: calc(-100dvh - 180px);
       overflow: hidden;
     }
     html.intro-active .entrance-scene,
