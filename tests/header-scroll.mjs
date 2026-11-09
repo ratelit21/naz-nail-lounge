@@ -21,6 +21,8 @@ try {
       assert.equal(initial.header,'rgba(0, 0, 0, 0)',width+' '+suffix+' initial header');
       assert.equal(initial.button,'rgba(0, 0, 0, 0)',width+' '+suffix+' initial button');
       assert.ok(parseFloat(initial.border)>=1,width+' '+suffix+' outlined button');
+      const headerRadius=await page.locator('.site-header .header-cta').evaluate(e=>parseFloat(getComputedStyle(e).borderTopLeftRadius));
+      assert.ok(headerRadius>=22,width+' '+suffix+' rounded header CTA missing');
       // Both hero sections expose the same obvious, accessible booking action.
       const heroBooking=page.locator(suffix ? '.cream-hero-booking-slot .hero-booking' : '.hero-booking-slot .hero-booking');
       assert.equal(await heroBooking.count(),1,width+' '+suffix+' missing hero booking CTA');
@@ -39,8 +41,8 @@ try {
         width+' '+suffix+' hero CTA too small: '+JSON.stringify(buttonGeometry));
       assert.ok(buttonGeometry.top>=buttonGeometry.parentBottom,
         width+' '+suffix+' hero CTA overlaps headline: '+JSON.stringify(buttonGeometry));
-      assert.ok(buttonGeometry.font.includes('Poiret One'),
-        width+' '+suffix+' hero CTA should use brand display font: '+buttonGeometry.font);
+      assert.ok(buttonGeometry.font.includes('Tenor Sans'),
+        width+' '+suffix+' hero CTA should use Tenor Sans: '+buttonGeometry.font);
       const actionFonts=await page.evaluate(()=>({
         header:getComputedStyle(document.querySelector('.site-header .header-cta')).fontFamily,
         hero:getComputedStyle(document.querySelector('.hero-booking-label')).fontFamily,
@@ -50,7 +52,7 @@ try {
         heroSize:parseFloat(getComputedStyle(document.querySelector('.hero-booking-label')).fontSize),
         headerSize:parseFloat(getComputedStyle(document.querySelector('.site-header .header-cta')).fontSize),
       }));
-      assert.ok([actionFonts.header,actionFonts.hero,actionFonts.navigation].every(f=>f.includes('Poiret One')),
+      assert.ok([actionFonts.header,actionFonts.hero,actionFonts.navigation].every(f=>f.includes('Tenor Sans')),
         width+' '+suffix+' action typography not unified: '+JSON.stringify(actionFonts));
       assert.ok(Math.abs(actionFonts.heroSpacing/actionFonts.heroSize -
         actionFonts.headerSpacing/actionFonts.headerSize)<.003,
