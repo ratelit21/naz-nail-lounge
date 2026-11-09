@@ -32,47 +32,40 @@ try {
         width+' '+suffix+' CTA label incorrect');
       const buttonGeometry=await heroBooking.evaluate(el=>{
         const box=el.getBoundingClientRect();
-        const font=getComputedStyle(el).fontFamily;
+        const style=getComputedStyle(el);
         const parent=document.querySelector(el.closest('.cream-hero')?'.cream-hero-tagline':'.hero-headline').getBoundingClientRect();
-        return {w:box.width,h:box.height,top:box.top,parentBottom:parent.bottom,font,
-          bg:getComputedStyle(el).backgroundColor,text:getComputedStyle(el).color};
+        return {w:box.width,h:box.height,top:box.top,parentBottom:parent.bottom,
+          font:style.fontFamily,weight:style.fontWeight,bg:style.backgroundColor,
+          text:style.color,radius:parseFloat(style.borderTopLeftRadius),
+          pseudo:getComputedStyle(el,'::after').content};
       });
       assert.ok(buttonGeometry.w>=200 && buttonGeometry.h>=54,
         width+' '+suffix+' hero CTA too small: '+JSON.stringify(buttonGeometry));
       assert.ok(buttonGeometry.top>=buttonGeometry.parentBottom,
         width+' '+suffix+' hero CTA overlaps headline: '+JSON.stringify(buttonGeometry));
-      assert.ok(buttonGeometry.font.includes('Tenor Sans'),
-        width+' '+suffix+' hero CTA should use Tenor Sans: '+buttonGeometry.font);
+      assert.ok(buttonGeometry.font.includes('Segoe UI'),
+        width+' '+suffix+' hero CTA should use crisp UI lettering: '+buttonGeometry.font);
+      assert.equal(buttonGeometry.weight,'600',width+' '+suffix+' hero CTA font is too light');
+      assert.equal(buttonGeometry.bg,'rgb(8, 37, 31)',width+' '+suffix+' hero CTA must have solid green fill');
+      assert.equal(buttonGeometry.text,'rgb(245, 235, 220)',width+' '+suffix+' hero CTA text contrast');
+      assert.ok(buttonGeometry.radius>=27,width+' '+suffix+' hero CTA must be a capsule');
+      assert.equal(buttonGeometry.pseudo,'none',width+' '+suffix+' obsolete underline on hero CTA');
       const actionFonts=await page.evaluate(()=>({
         header:getComputedStyle(document.querySelector('.site-header .header-cta')).fontFamily,
         hero:getComputedStyle(document.querySelector('.hero-booking-label')).fontFamily,
         navigation:getComputedStyle(document.querySelector('.site-header .nav-link')).fontFamily,
-        heroSpacing:parseFloat(getComputedStyle(document.querySelector('.hero-booking-label')).letterSpacing),
-        headerSpacing:parseFloat(getComputedStyle(document.querySelector('.site-header .header-cta')).letterSpacing),
-        heroSize:parseFloat(getComputedStyle(document.querySelector('.hero-booking-label')).fontSize),
-        headerSize:parseFloat(getComputedStyle(document.querySelector('.site-header .header-cta')).fontSize),
       }));
-      assert.ok([actionFonts.header,actionFonts.hero,actionFonts.navigation].every(f=>f.includes('Tenor Sans')),
-        width+' '+suffix+' action typography not unified: '+JSON.stringify(actionFonts));
-      assert.ok(Math.abs(actionFonts.heroSpacing/actionFonts.heroSize -
-        actionFonts.headerSpacing/actionFonts.headerSize)<.003,
-        width+' '+suffix+' action tracking proportion differs: '+JSON.stringify(actionFonts));
-      assert.equal(buttonGeometry.bg,'rgba(0, 0, 0, 0)',width+' '+suffix+' editorial CTA must have no fill');
-      assert.equal(buttonGeometry.text,'rgb(8, 37, 31)',width+' '+suffix+' incorrect editorial CTA text color');
+      assert.ok([actionFonts.header,actionFonts.hero,actionFonts.navigation].every(f=>f.includes('Segoe UI')),
+        width+' '+suffix+' CTA and navigation should share a readable typeface: '+JSON.stringify(actionFonts));
       assert.equal((await heroBooking.innerText()).trim(),'Записаться',
         width+' '+suffix+' hero CTA contains redundant wording');
       assert.equal(await heroBooking.locator('.hero-booking-note').count(),0,
         width+' '+suffix+' old online caption is still present');
-      assert.equal(await heroBooking.evaluate(e=>getComputedStyle(e).borderBottomStyle),'solid',
-        width+' '+suffix+' hero CTA needs hairline anchor');
-      const line=await heroBooking.evaluate(e=>getComputedStyle(e,'::after'));
-      assert.ok(line.content!=='none',width+' '+suffix+' missing underline accent');
-      const lineBeforeHover=await heroBooking.evaluate(e=>getComputedStyle(e,'::after').transform);
       await heroBooking.hover();
-      const lineAfterHover=await heroBooking.evaluate(e=>getComputedStyle(e,'::after').transform);
-      assert.notEqual(lineBeforeHover,lineAfterHover,width+' '+suffix+' underline hover animation missing');
       assert.equal(await heroBooking.evaluate(e=>getComputedStyle(e).backgroundColor),
-        'rgba(0, 0, 0, 0)',width+' '+suffix+' hero CTA must not get filled on hover');
+        'rgb(18, 55, 45)',width+' '+suffix+' hero CTA hover must have clear solid fill');
+      assert.equal(await heroBooking.evaluate(e=>getComputedStyle(e).color),
+        'rgb(245, 235, 220)',width+' '+suffix+' hero CTA hover contrast');
       await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
       await page.waitForFunction(()=>!document.querySelector('.site-header')?.classList.contains('is-scrolled'));
       // A hover must NOT add green (or any other fill) over a transparent header.
@@ -103,10 +96,10 @@ try {
         const contact=page.locator('.nav-desktop .nav-link').last();
         assert.equal(await contact.evaluate(e=>getComputedStyle(e).color),'rgb(18, 55, 45)',
           width+' atmosphere contacts match homepage palette');
-        assert.notEqual(await contact.evaluate(e=>getComputedStyle(e).textShadow),'none',
-          width+' atmosphere contacts need contrast shadow');
-        assert.notEqual(await page.locator('.site-header .header-cta').evaluate(e=>getComputedStyle(e).textShadow),
-          'none',width+' atmosphere booking needs contrast shadow');
+        assert.equal(await contact.evaluate(e=>getComputedStyle(e).textShadow),'none',
+          width+' atmosphere contacts labels must stay sharp');
+        assert.equal(await page.locator('.site-header .header-cta').evaluate(e=>getComputedStyle(e).textShadow),
+          'none',width+' atmosphere booking label must stay sharp');
         const active=page.locator('.nav-desktop .nav-link[aria-current="page"]');
         assert.equal(await active.evaluate(e=>getComputedStyle(e,'::after').transform),
           'matrix(0, 0, 0, 1, 0, 0)',width+' active atmosphere should not remain underlined');
@@ -115,13 +108,11 @@ try {
           'matrix(1, 0, 0, 1, 0, 0)',width+' atmosphere hover underline should work');
         await page.locator('.site-header .header-cta').hover();
       }
-      // Every header navigation label and the booking text use a dark legibility shadow.
+      // Text shadows blur UI glyphs. The header hover box-shadow remains intact.
       const introShadows=await page.locator('.site-header .nav-desktop .nav-link, .site-header .header-cta')
         .evaluateAll(els=>els.map(el=>getComputedStyle(el).textShadow));
-      assert.ok(introShadows.every(shadow=>shadow!=='none' && shadow.includes('rgba(25, 9, 6')),
-        width+' '+suffix+' missing consistent dark header shadow: '+JSON.stringify(introShadows));
-      assert.ok(introShadows.every(shadow=>!shadow.includes('7px')),
-        width+' '+suffix+' old excessive text glow still present');
+      assert.ok(introShadows.every(shadow=>shadow==='none'),
+        width+' '+suffix+' header text should be crisp: '+JSON.stringify(introShadows));
       if(suffix){
         const artBounds=await page.locator('.cream-hero-art').evaluate(e=>{
           const rect=e.getBoundingClientRect();
@@ -192,8 +183,8 @@ try {
       }
       const afterScrollShadows=await page.locator('.site-header .nav-desktop .nav-link, .site-header .header-cta')
         .evaluateAll(els=>els.map(el=>getComputedStyle(el).textShadow));
-      assert.ok(afterScrollShadows.every(shadow=>shadow!=='none' && shadow.includes('rgba(25, 9, 6')),
-        width+' '+suffix+' scrolled dark header shadow missing: '+JSON.stringify(afterScrollShadows));
+      assert.ok(afterScrollShadows.every(shadow=>shadow==='none'),
+        width+' '+suffix+' scrolled header text should remain crisp: '+JSON.stringify(afterScrollShadows));
       const scrolledLogoColor=await page.locator('.site-header .wordmark').evaluate(e=>getComputedStyle(e).color);
       assert.equal(scrolledLogoColor,'rgb(18, 55, 45)',width+' '+suffix+' scrolled logo contrast');
       assert.ok(Math.abs(await page.locator('.site-header').evaluate(e=>e.getBoundingClientRect().top))<=2,'Sticky header '+width);

@@ -30,6 +30,7 @@
   --focus: #c59b65;
   --font-display: 'Poiret One', 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'Tenor Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-ui: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --header-row-h: 88px;
   --header-h: calc(var(--header-row-h) + env(safe-area-inset-top,0px));
   --pad-x: max(clamp(24px,4.5vw,80px),env(safe-area-inset-left,0px),env(safe-area-inset-right,0px));
