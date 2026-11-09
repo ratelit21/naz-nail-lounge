@@ -51,10 +51,10 @@ try {
         width+' '+suffix+' hero CTA needs hairline anchor');
       const line=await heroBooking.evaluate(e=>getComputedStyle(e,'::after'));
       assert.ok(line.content!=='none',width+' '+suffix+' missing underline accent');
-      const beforeHover=await heroBooking.evaluate(e=>getComputedStyle(e,'::after').transform);
+      const lineBeforeHover=await heroBooking.evaluate(e=>getComputedStyle(e,'::after').transform);
       await heroBooking.hover();
-      const afterHover=await heroBooking.evaluate(e=>getComputedStyle(e,'::after').transform);
-      assert.notEqual(beforeHover,afterHover,width+' '+suffix+' underline hover animation missing');
+      const lineAfterHover=await heroBooking.evaluate(e=>getComputedStyle(e,'::after').transform);
+      assert.notEqual(lineBeforeHover,lineAfterHover,width+' '+suffix+' underline hover animation missing');
       assert.equal(await heroBooking.evaluate(e=>getComputedStyle(e).backgroundColor),
         'rgba(0, 0, 0, 0)',width+' '+suffix+' hero CTA must not get filled on hover');
       await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
