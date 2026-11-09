@@ -33,39 +33,46 @@ try {
       const buttonGeometry=await heroBooking.evaluate(el=>{
         const box=el.getBoundingClientRect();
         const style=getComputedStyle(el);
+        const label=getComputedStyle(el.querySelector('.hero-booking-label'));
         const parent=document.querySelector(el.closest('.cream-hero')?'.cream-hero-tagline':'.hero-headline').getBoundingClientRect();
         return {w:box.width,h:box.height,top:box.top,parentBottom:parent.bottom,
           font:style.fontFamily,weight:style.fontWeight,bg:style.backgroundColor,
           text:style.color,radius:parseFloat(style.borderTopLeftRadius),
+          outerBorder:style.borderBottomStyle,
+          labelBorder:label.borderBottomStyle,
+          labelBorderWidth:label.borderBottomWidth,
           pseudo:getComputedStyle(el,'::after').content};
       });
       assert.ok(buttonGeometry.w>=200 && buttonGeometry.h>=54,
-        width+' '+suffix+' hero CTA too small: '+JSON.stringify(buttonGeometry));
+        width+' '+suffix+' booking link too small: '+JSON.stringify(buttonGeometry));
       assert.ok(buttonGeometry.top>=buttonGeometry.parentBottom,
-        width+' '+suffix+' hero CTA overlaps headline: '+JSON.stringify(buttonGeometry));
-      assert.ok(buttonGeometry.font.includes('Segoe UI'),
-        width+' '+suffix+' hero CTA should use crisp UI lettering: '+buttonGeometry.font);
-      assert.equal(buttonGeometry.weight,'600',width+' '+suffix+' hero CTA font is too light');
-      assert.equal(buttonGeometry.bg,'rgb(8, 37, 31)',width+' '+suffix+' hero CTA must have solid green fill');
-      assert.equal(buttonGeometry.text,'rgb(245, 235, 220)',width+' '+suffix+' hero CTA text contrast');
-      assert.ok(buttonGeometry.radius>=27,width+' '+suffix+' hero CTA must be a capsule');
-      assert.equal(buttonGeometry.pseudo,'none',width+' '+suffix+' obsolete underline on hero CTA');
+        width+' '+suffix+' booking overlaps heading: '+JSON.stringify(buttonGeometry));
+      assert.ok(buttonGeometry.font.includes('Tenor Sans'),
+        width+' '+suffix+' must use NAZ body typeface: '+buttonGeometry.font);
+      assert.equal(buttonGeometry.weight,'400',width+' '+suffix+' booking lettering not editorial');
+      assert.equal(buttonGeometry.bg,'rgba(0, 0, 0, 0)',width+' '+suffix+' hero action must stay transparent');
+      assert.equal(buttonGeometry.text,'rgb(8, 37, 31)',width+' '+suffix+' hero action must contrast');
+      assert.equal(buttonGeometry.radius,0,width+' '+suffix+' hero action must not be a capsule');
+      assert.equal(buttonGeometry.outerBorder,'none',width+' '+suffix+' double underline outer border');
+      assert.equal(buttonGeometry.labelBorder,'solid',width+' '+suffix+' single underline missing');
+      assert.equal(buttonGeometry.labelBorderWidth,'1px',width+' '+suffix+' underline should be delicate');
+      assert.equal(buttonGeometry.pseudo,'none',width+' '+suffix+' second underline pseudo remains');
       const actionFonts=await page.evaluate(()=>({
         header:getComputedStyle(document.querySelector('.site-header .header-cta')).fontFamily,
         hero:getComputedStyle(document.querySelector('.hero-booking-label')).fontFamily,
         navigation:getComputedStyle(document.querySelector('.site-header .nav-link')).fontFamily,
       }));
-      assert.ok([actionFonts.header,actionFonts.hero,actionFonts.navigation].every(f=>f.includes('Segoe UI')),
-        width+' '+suffix+' CTA and navigation should share a readable typeface: '+JSON.stringify(actionFonts));
+      assert.ok([actionFonts.header,actionFonts.hero,actionFonts.navigation].every(f=>f.includes('Tenor Sans')),
+        width+' '+suffix+' action typography not unified: '+JSON.stringify(actionFonts));
       assert.equal((await heroBooking.innerText()).trim(),'Записаться',
-        width+' '+suffix+' hero CTA contains redundant wording');
+        width+' '+suffix+' booking label altered');
       assert.equal(await heroBooking.locator('.hero-booking-note').count(),0,
-        width+' '+suffix+' old online caption is still present');
+        width+' '+suffix+' redundant caption returned');
       await heroBooking.hover();
       assert.equal(await heroBooking.evaluate(e=>getComputedStyle(e).backgroundColor),
-        'rgb(18, 55, 45)',width+' '+suffix+' hero CTA hover must have clear solid fill');
+        'rgba(0, 0, 0, 0)',width+' '+suffix+' hover must not fill editorial CTA');
       assert.equal(await heroBooking.evaluate(e=>getComputedStyle(e).color),
-        'rgb(245, 235, 220)',width+' '+suffix+' hero CTA hover contrast');
+        'rgb(117, 67, 47)',width+' '+suffix+' hover should use terracotta ink');
       await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
       await page.waitForFunction(()=>!document.querySelector('.site-header')?.classList.contains('is-scrolled'));
       // A hover must NOT add green (or any other fill) over a transparent header.

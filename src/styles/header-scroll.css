@@ -113,21 +113,22 @@ main > .cream-hero {
   }
 }
 
-/* A clean UI sans for actionable text; display lettering remains Poiret One. */
-.site-header .nav-desktop .nav-link {
-  font-family: var(--font-ui);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: .005em;
-  line-height: 1.45;
+/* Tenor Sans for readable navigation/actions; Poiret One only for display typography.
+   Do not alter header opacity, scroll fill, golden outline hover or menu behavior. */
+.site-header .nav-desktop .nav-link{
+  font-family:var(--font-body);
+  font-size:var(--fs-nav);
+  font-weight:400;
+  letter-spacing:.012em;
+  line-height:1.45;
 }
-.site-header .header-cta {
-  font-family: var(--font-ui);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: .005em;
-  line-height: 1.3;
+.site-header .header-cta{
+  font-family:var(--font-body);
+  font-size:var(--fs-cta);
+  font-weight:400;
+  letter-spacing:.012em;
+  line-height:1.3;
 }
-@media (max-width: 374px) {
-  .site-header .header-cta { font-size: 14px; padding-inline: 12px; }
+@media(max-width:374px){
+  .site-header .header-cta{font-size:14px;padding-inline:12px}
 }
