@@ -32,7 +32,7 @@ export class ImageStackEntrance {
     this.cards = [...element.querySelectorAll<HTMLElement>('[data-stack-card]')];
   }
 
-  play() {
+  play(onReveal?: () => void) {
     this.hide();
     const desktop = matchMedia('(min-width:53em)').matches;
     const group = this.element.querySelector<HTMLElement>('[data-stack-group]')!;
@@ -102,6 +102,7 @@ export class ImageStackEntrance {
       .call(() => {
         this.element.dataset.phase = 'revealing';
         root.classList.add('intro-revealing');
+        onReveal?.();
       })
       .to(group, {scale:exitScale, duration:.55, ease:'power2.inOut'}, '<')
       .to(headings, {opacity:0, filter:`blur(${desktop ? 14 : 8}px)`, duration:.45, ease:'power2.in'}, '<')
