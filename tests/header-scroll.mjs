@@ -47,6 +47,36 @@ try {
       assert.equal(first.bookingHref, 'https://n1824990.yclients.com/');
       assert.ok(Math.abs(first.headerTop) < 2, 'Sticky header misplaced');
       assert.ok(Math.abs(first.heroTop) < 2, 'Hero background does not extend behind the header');
+      if (suffix === 'atmosfera/' && width < 1024) {
+        const layout = await page.evaluate(() => {
+          const photo = document.querySelector('.cream-hero-art');
+          const header = document.querySelector('.site-header');
+          const art = photo.getBoundingClientRect();
+          const bar = header.getBoundingClientRect();
+          return {artTop: art.top, artBottom: art.bottom, headerBottom: bar.bottom,
+            photoLoaded: photo.querySelector('img')?.naturalWidth > 0};
+        });
+        assert.ok(Math.abs(layout.artTop) < 2,
+          'Atmosphere photograph starts below the transparent navigation: ' + JSON.stringify(layout));
+        assert.ok(layout.artBottom > layout.headerBottom + 80,
+          'Atmosphere photo fails to extend behind the header: ' + JSON.stringify(layout));
+        assert.ok(layout.photoLoaded, 'Atmosphere hero image did not load');
+      }
+      if (width < 1024 && suffix === '') {
+        await page.evaluate(() => window.scrollTo({top: 48, behavior:'instant'}));
+        await page.waitForFunction(() => window.scrollY >= 40);
+        assert.equal(await page.locator('.site-header.is-scrolled').count(), 0,
+          'Header tinted too early as the Safari toolbar changed height');
+        await page.evaluate(() => window.scrollTo({top: 150, behavior:'instant'}));
+        await page.waitForFunction(() => document.querySelector('.site-header').classList.contains('is-scrolled'));
+        await page.evaluate(() => window.scrollTo({top: 48, behavior:'instant'}));
+        await page.waitForFunction(() => window.scrollY <= 52);
+        assert.equal(await page.locator('.site-header.is-scrolled').count(), 1,
+          'Header flickers near Safari chrome while scrolling back up');
+        await page.evaluate(() => window.scrollTo({top: 0, behavior:'instant'}));
+        await page.waitForFunction(() => !document.querySelector('.site-header').classList.contains('is-scrolled'));
+      }
+
       assert.ok(first.docWidth <= width + 2, 'Horizontal overflow at ' + width);
       await page.evaluate(() => window.scrollTo({top: 500, behavior: 'instant'}));
       await page.waitForFunction(() => {
