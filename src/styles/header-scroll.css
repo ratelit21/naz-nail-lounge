@@ -127,6 +127,30 @@ main > .cream-hero {
 }
 
 
+
+/* Browser-owned iOS 26 status area can paint a flat root color when the
+   foreground hero texture only lives on a child. Give the scrolling root/body
+   the exact first-screen artwork too. This does not change the actual site
+   sections or the existing intro and bottom-footer colour compensation. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 1023px) {
+    html[data-page="home"]:not(.intro-active):not(.chrome-bottom-dark),
+    html[data-page="home"]:not(.intro-active):not(.chrome-bottom-dark) body {
+      background-image: linear-gradient(#eee1ce75, #eee1ce75), var(--hero-stone);
+      background-repeat: no-repeat;
+      background-position: center top;
+      background-size: 100% auto;
+    }
+    html[data-page="atmosphere"]:not(.chrome-bottom-dark),
+    html[data-page="atmosphere"]:not(.chrome-bottom-dark) body {
+      background-image: var(--atmosphere-chrome-photo, var(--material-stone));
+      background-repeat: no-repeat;
+      background-position: center top;
+      background-size: 100% auto;
+    }
+  }
+}
+
 /* aria-current remains for screen readers. Only hover/focus gets an underline:
    don't leave 'Атмосфера' permanently underlined after navigation. */
 .site-header .nav-desktop .nav-link[aria-current="page"]:not(:hover):not(:focus-visible)::after {
