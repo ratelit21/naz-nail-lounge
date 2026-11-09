@@ -15,33 +15,48 @@
   box-shadow: 0 5px 18px rgba(8,37,31,.055);
 }
 
-/* The booking action is a soft, solid capsule, equally legible over the hero
-   and after the header acquires its opaque background. */
-.site-header .header-cta{
-  background:var(--canvas);
-  color:var(--creamWarm);
-  border:1px solid var(--canvas);
-  border-radius:999px;
-  opacity:1;
-  box-shadow:none;
-  text-shadow:none;
-  transition:background-color .24s ease,color .24s ease,border-color .24s ease;
+/* Booking: outlined on hero; filled with the EXACT same cream as the scrolled header. */
+.site-header .header-cta {
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  opacity: 1;
+  transition: background-color .38s ease, color .38s ease, border-color .3s ease, box-shadow .3s ease;
 }
-.site-header:not(.header-cream) .header-cta{
-  background:var(--creamWarm);
-  color:var(--canvas);
-  border-color:var(--creamWarm);
+.site-header.header-cream.is-scrolled .header-cta,
+html.is-menu-open .site-header.header-cream .header-cta {
+  background: var(--cream);
+  color: var(--textOnLight);
+  border-color: var(--canvas);
 }
-@media(hover:hover){
-  .site-header.header-cream .header-cta:hover{
-    background:var(--surface);border-color:var(--surface);
+.site-header:not(.header-cream).is-scrolled .header-cta,
+html.is-menu-open .site-header:not(.header-cream) .header-cta {
+  background: var(--creamWarm);
+  color: var(--canvas);
+  border-color: var(--creamWarm);
+}
+/* No text fading, no fill swapping: only the NAZ gold hairline glows.
+   This covers both the transparent and filled header on both pages. */
+@media (hover:hover) {
+  .site-header .header-cta:hover {
+    opacity: 1;
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 1px rgba(197,155,101,.66),
+      0 0 13px rgba(197,155,101,.42),
+      inset 0 0 8px rgba(197,155,101,.13);
   }
-  .site-header:not(.header-cream) .header-cta:hover{
-    background:var(--cream);border-color:var(--cream);
+  .site-header:not(.is-scrolled) .header-cta:hover {
+    background-color: transparent;
   }
 }
-.site-header .header-cta:focus-visible{
-  outline:2px solid var(--focus);outline-offset:4px;
+.site-header .header-cta:focus-visible {
+  opacity: 1;
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px rgba(197,155,101,.66),
+    0 0 13px rgba(197,155,101,.42);
 }
 /* Move only the hero's painted background behind the sticky header.
    Compensating height and padding retain the existing content layout. */
@@ -76,6 +91,14 @@ main > .cream-hero {
 .site-header .nav-desktop .nav-link[aria-current="page"]:not(:hover):not(:focus-visible)::after {
   transform: scaleX(0);
 }
+/* Consistent dark legibility shadow for ALL header nav labels and the
+   booking button, on BOTH pages and in BOTH header states.
+   The logo, labels' own colors, outlines, and hover animation stay untouched. */
+.site-header .nav-desktop .nav-link,
+.site-header .header-cta {
+  text-shadow: 0 1px 1px rgba(25,9,6,.16);
+}
+
 /* Atmosphere: shift the REAL photograph's crop down, not the image layer.
    Keep the image full-bleed from the very top: no overlay, mask, fade or gap.
    On wide screens the source image is taller than the hero; anchoring its top
@@ -92,19 +115,29 @@ main > .cream-hero {
   }
 }
 
-/* Navigation and booking share Tenor Sans at restrained editorial sizes.
-   The logo and hero lettering retain Poiret One. */
-.site-header .nav-desktop .nav-link{
-  font-family:var(--font-body);
-  font-size:var(--fs-nav);
-  font-weight:400;
-  letter-spacing:.012em;
-  line-height:1.45;
+/* Unified NAZ action typography: Poiret One in navigation and booking,
+   restrained sizing and proportional tracking shared with the hero action. */
+.site-header .nav-desktop .nav-link {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 1.35vw, 20px);
+  font-weight: 400;
+  letter-spacing: .018em;
+  line-height: 1.3;
 }
-.site-header .header-cta{
-  font-family:var(--font-body);
-  font-size:var(--fs-cta);
-  font-weight:400;
-  letter-spacing:.01em;
-  line-height:1.25;
+.site-header .header-cta {
+  font-family: var(--font-display);
+  font-size: clamp(19px, 1.4vw, 21px);
+  font-weight: 400;
+  letter-spacing: .018em;
+  line-height: 1.3;
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .site-header .nav-desktop .nav-link { font-size: 18px; letter-spacing: .018em; }
+  .site-header .header-cta { font-size: 19px; }
+}
+@media (max-width: 1023px) {
+  .site-header .header-cta { font-size: 20px; }
+}
+@media (max-width: 374px) {
+  .site-header .header-cta { font-size: 19px; padding-inline: 10px; }
 }
