@@ -10,7 +10,9 @@ function syncHeader() {
     ?.classList.toggle('is-scrolled', !intro && window.scrollY > threshold);
 
   let darkBottom = false;
-  if (!intro) {
+  // At the top of the page, keep the top Safari status bar in the hero's
+  // cream palette even when a dark next section just touches the bottom edge.
+  if (!intro && window.scrollY > threshold) {
     const footer = document.querySelector<HTMLElement>('.site-footer');
     // When the document ends above the iPhone toolbar, Safari uses the BODY
     // background-color below it. The fallback must match the dark footer.
