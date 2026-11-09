@@ -21,6 +21,18 @@ try {
       assert.equal(initial.header,'rgba(0, 0, 0, 0)',width+' '+suffix+' initial header');
       assert.equal(initial.button,'rgba(0, 0, 0, 0)',width+' '+suffix+' initial button');
       assert.ok(parseFloat(initial.border)>=1,width+' '+suffix+' outlined button');
+      const textColors=await page.evaluate(()=>{
+        const h=document.querySelector('.site-header');
+        return {
+          wordmark:getComputedStyle(h.querySelector('.wordmark')).color,
+          button:getComputedStyle(h.querySelector('.header-cta')).color,
+          toggle:getComputedStyle(h.querySelector('[data-menu-open]')).color,
+        };
+      });
+      const expectedInitial=suffix ? 'rgb(245, 235, 220)' : 'rgb(18, 55, 45)';
+      assert.equal(textColors.wordmark,expectedInitial,width+' '+suffix+' initial logo contrast');
+      assert.equal(textColors.button,expectedInitial,width+' '+suffix+' initial booking contrast');
+      assert.equal(textColors.toggle,expectedInitial,width+' '+suffix+' initial menu contrast');
       assert.ok(Math.abs(initial.headerTop)<=2 && Math.abs(initial.heroTop)<=2,width+' '+suffix+' hero overlap: '+JSON.stringify(initial));
       assert.ok(initial.html<=width+2 && initial.body<=width+2,width+' '+suffix+' overflow: '+JSON.stringify(initial));
       await page.evaluate(()=>window.scrollTo({top:500,behavior:'instant'}));
@@ -30,6 +42,8 @@ try {
           getComputedStyle(h).backgroundColor==='rgb(238, 225, 206)' &&
           getComputedStyle(h.querySelector('.header-cta')).backgroundColor==='rgb(8, 37, 31)';
       },null,{timeout:6000});
+      const scrolledLogoColor=await page.locator('.site-header .wordmark').evaluate(e=>getComputedStyle(e).color);
+      assert.equal(scrolledLogoColor,'rgb(18, 55, 45)',width+' '+suffix+' scrolled logo contrast');
       assert.ok(Math.abs(await page.locator('.site-header').evaluate(e=>e.getBoundingClientRect().top))<=2,'Sticky header '+width);
       await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
       await page.waitForFunction(()=>{
@@ -42,6 +56,8 @@ try {
         await page.locator('[data-menu-open]').click();
         assert.equal(await page.locator('[data-nav-panel]').isVisible(),true,'Menu open '+width);
         await page.waitForFunction(()=>getComputedStyle(document.querySelector('.site-header')).backgroundColor==='rgb(238, 225, 206)');
+        assert.equal(await page.locator('.site-header .wordmark').evaluate(e=>getComputedStyle(e).color),
+          'rgb(18, 55, 45)',width+' '+suffix+' menu-open contrast');
         await page.locator('[data-menu-close]').click();
         assert.equal(await page.locator('[data-nav-panel]').isVisible(),false,'Menu close '+width);
       }

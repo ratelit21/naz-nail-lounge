@@ -74,3 +74,27 @@ main > .cream-hero {
 @media (prefers-reduced-motion:reduce) {
   .site-header, .site-header .header-cta { transition:none; }
 }
+
+/* Atmosphere uses a dark photo behind the transparent header.
+   White/ivory ink stays legible on the photo; scrolled/menu states use
+   the original dark-green ink on the cream header. */
+html[data-page="atmosphere"] .site-header.header-cream {
+  color: var(--creamWarm);
+  text-shadow: 0 1px 8px rgba(6,28,24,.38);
+  transition:
+    background-color .38s ease,
+    border-color .38s ease,
+    box-shadow .38s ease,
+    color .38s ease;
+}
+html[data-page="atmosphere"] .site-header.header-cream.is-scrolled,
+html[data-page="atmosphere"].is-menu-open .site-header.header-cream {
+  color: var(--textOnLight);
+  text-shadow: none;
+}
+html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .header-cta:focus-visible {
+  outline-color: var(--creamWarm);
+}
+html[data-page="atmosphere"].is-menu-open .site-header.header-cream .header-cta:focus-visible {
+  outline-color: var(--canvas);
+}
