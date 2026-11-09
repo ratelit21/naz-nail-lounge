@@ -92,7 +92,9 @@ export class ImageStackEntrance {
         duration:.5,
       })
       .to(this.cards, {rotateY:180, opacity:.92, duration:1}, '<')
-      .from(headings, {opacity:0, filter:`blur(${titleBlur}px)`, duration:1}, '<')
+      .fromTo(headings,
+        {opacity:0, filter:`blur(${titleBlur}px)`},
+        {opacity:1, filter:'blur(0px)', duration:1}, '<')
       .call(() => {this.element.dataset.phase = 'breathing';})
       .to(group, {rotation:breathTurn, duration:breathMs, ease:'none'})
       .to(this.cards[Math.floor(count * .25)], {rotateY:'+=180', duration:.55, ease:'power1.inOut'}, '<0.15')
