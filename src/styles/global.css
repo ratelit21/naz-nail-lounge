@@ -180,10 +180,12 @@ html.reveal-armed [data-reveal]:not([data-revealed]) [data-team-copy]{
    when a viewport-sized fixed popup appears: WebKit/WebKit PR #49187. */
 .entrance-backdrop{position:absolute;inset:0;z-index:0;background:var(--material-clay) center/cover,var(--intro-edge)}
 .image-stack-entrance::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:var(--intro-grain) repeat;background-size:150px 150px;opacity:.04;mix-blend-mode:multiply}
-.intro-active .image-stack-entrance{display:block;visibility:visible}
-/* Preload wait: terracotta only — no static NAZ title before the card timeline. */
+.intro-active .image-stack-entrance{display:block;visibility:visible;opacity:1;pointer-events:none}
+/* Boot / waiting: solid clay cover only — cards and NAZ stay off until decode + timeline. */
 .intro-active .image-stack-entrance:not([data-phase]) .entrance-scene,
-.intro-active .image-stack-entrance:not([data-phase]) .entrance-headings{visibility:hidden;opacity:0}
+.intro-active .image-stack-entrance:not([data-phase]) .entrance-headings,
+.intro-active .image-stack-entrance[data-phase=waiting] .entrance-scene,
+.intro-active .image-stack-entrance[data-phase=waiting] .entrance-headings{visibility:hidden;opacity:0}
 /* Fallback solid for Safari chrome; texture lives on .entrance-backdrop. */
 html.intro-active{overflow:hidden;background:var(--intro-edge)}
 html.intro-active body{background:var(--intro-edge)}
@@ -232,8 +234,8 @@ html.intro-active.intro-revealing body{background:transparent}
 }
 .entrance-scene{position:absolute;inset:0;z-index:2;perspective:1000px;overflow:hidden}
 .entrance-group{position:absolute;left:50%;top:50%;width:0;height:0}
-.entrance-card{position:absolute;left:50%;top:50%;width:96px;height:144px;opacity:0;transform:translate(-50%,-50%);border-radius:5px;box-shadow:0 10px 24px #08251f24}
-.entrance-card img{display:block;width:100%;height:100%;object-fit:cover;border-radius:5px}
+.entrance-card{position:absolute;left:50%;top:50%;width:96px;height:144px;opacity:0;transform:translate(-50%,-50%);border-radius:5px;box-shadow:0 10px 24px #08251f24;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d;background:var(--intro-edge)}
+.entrance-card img{display:block;width:100%;height:100%;object-fit:cover;border-radius:5px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .entrance-headings{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;z-index:10;pointer-events:none;text-transform:uppercase;opacity:0}
 .entrance-headings p{font-family:var(--font-display);font-size:clamp(52px,min(11vw,14svh),140px);line-height:.9;font-weight:400;letter-spacing:.04em}
 .entrance-headings span{font-family:var(--font-display);font-size:clamp(24px,3.6vw,52px);line-height:1;margin-top:14px;letter-spacing:.12em;opacity:.82}

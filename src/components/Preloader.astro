@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import portrait from '../assets/photos/campaign-portrait.jpg';
 import botanical from '../assets/photos/campaign-botanical.jpg';
 import manicure from '../assets/photos/svc-manicure.jpg';
@@ -8,14 +8,31 @@ import design from '../assets/photos/svc-design.jpg';
 import velvet from '../assets/photos/mat-velvet.jpg';
 import stations from '../assets/photos/about-stations.jpg';
 import warm from '../assets/photos/mat-warm.jpg';
-const images = [portrait, manicure, botanical, lounge, design, velvet, stations, warm];
+const sources = [portrait, manicure, botanical, lounge, design, velvet, stations, warm];
+// Exact 192px plates only — no large fallback src that pops in after the ring starts.
+const images = await Promise.all(sources.map(src => getImage({
+  src,
+  width: 192,
+  height: 288,
+  fit: 'cover',
+  format: 'webp',
+  quality: 62,
+})));
 ---
 <div class="image-stack-entrance" data-image-stack role="status" aria-label="Открываем NAZ Nail Lounge">
   <div class="entrance-backdrop" aria-hidden="true"></div>
   <div class="entrance-scene" aria-hidden="true">
     <div class="entrance-group" data-stack-group>
-      {images.map(src => <figure class="entrance-card" data-stack-card>
-        <Image src={src} alt="" widths={[192,384,768]} sizes="(min-width:53em) 384px, 288px" quality={76} loading="eager" />
+      {images.map((image, index) => <figure class="entrance-card" data-stack-card>
+        <img
+          src={image.src}
+          alt=""
+          width={image.attributes.width}
+          height={image.attributes.height}
+          loading="eager"
+          decoding="async"
+          fetchpriority={index < 4 ? 'high' : 'low'}
+        />
       </figure>)}
     </div>
   </div>
