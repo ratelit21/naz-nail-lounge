@@ -41,8 +41,24 @@ try {
         width+' '+suffix+' hero CTA overlaps headline: '+JSON.stringify(buttonGeometry));
       assert.ok(buttonGeometry.font.includes('Tenor Sans'),
         width+' '+suffix+' hero CTA typography mismatch: '+buttonGeometry.font);
-      assert.equal(buttonGeometry.bg,'rgb(8, 37, 31)',width+' '+suffix+' wrong CTA fill');
-      assert.equal(buttonGeometry.text,'rgb(245, 235, 220)',width+' '+suffix+' wrong CTA text color');
+      assert.equal(buttonGeometry.bg,'rgba(0, 0, 0, 0)',width+' '+suffix+' editorial CTA must have no fill');
+      assert.equal(buttonGeometry.text,'rgb(8, 37, 31)',width+' '+suffix+' incorrect editorial CTA text color');
+      assert.equal((await heroBooking.innerText()).trim(),'Записаться',
+        width+' '+suffix+' hero CTA contains redundant wording');
+      assert.equal(await heroBooking.locator('.hero-booking-note').count(),0,
+        width+' '+suffix+' old online caption is still present');
+      assert.equal(await heroBooking.evaluate(e=>getComputedStyle(e).borderBottomStyle),'solid',
+        width+' '+suffix+' hero CTA needs hairline anchor');
+      const line=await heroBooking.evaluate(e=>getComputedStyle(e,'::after'));
+      assert.ok(line.content!=='none',width+' '+suffix+' missing underline accent');
+      const beforeHover=await heroBooking.evaluate(e=>getComputedStyle(e,'::after').transform);
+      await heroBooking.hover();
+      const afterHover=await heroBooking.evaluate(e=>getComputedStyle(e,'::after').transform);
+      assert.notEqual(beforeHover,afterHover,width+' '+suffix+' underline hover animation missing');
+      assert.equal(await heroBooking.evaluate(e=>getComputedStyle(e).backgroundColor),
+        'rgba(0, 0, 0, 0)',width+' '+suffix+' hero CTA must not get filled on hover');
+      await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+      await page.waitForFunction(()=>!document.querySelector('.site-header')?.classList.contains('is-scrolled'));
       // A hover must NOT add green (or any other fill) over a transparent header.
       await page.locator('.site-header .header-cta').hover();
       const transparentHover=await page.locator('.site-header .header-cta').evaluate(el=>({
