@@ -61,6 +61,10 @@ for (const [engineName, engine] of Object.entries({chromium, firefox, webkit})) 
       await page.waitForTimeout(1200);
       const interiorOpacity = await interior.evaluate(el => getComputedStyle(el).opacity);
       assert.ok(Number(interiorOpacity) >= 0.95, 'Interior remains hidden: ' + interiorOpacity);
+      await page.evaluate(() => window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+      await page.waitForFunction(() => !document.documentElement.classList.contains('chrome-bottom-dark'));
+      assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
+        'rgb(238, 225, 206)', 'Light Atmosphere footer must keep light Safari chrome');
       assert.deepEqual(errors, [], engineName + '/' + width + ' browser errors: ' + errors.join('; '));
       console.log(engineName + '/' + width + ' atmosphere navigation, five images and visibility PASS');
       await context.close();
