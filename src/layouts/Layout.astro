@@ -34,7 +34,7 @@ const {
 // even on a cold connection. Full-resolution variants load over them.
 const previewFor = async (filename: string) => {
   const source = path.join(process.cwd(), 'public', 'textures', filename);
-  return (await sharp(source).resize({width: 48}).webp({quality: 34, effort: 2}).toBuffer()).toString('base64');
+  return (await sharp(source).resize({width: 256}).webp({quality: 60, effort: 3}).toBuffer()).toString('base64');
 };
 const [introPreviewDesktop, introPreviewMobile] = nav === 'home'
   ? await Promise.all([
