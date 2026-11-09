@@ -30,7 +30,7 @@ try {
         };
       });
       const expectedInitial=suffix ? 'rgb(245, 235, 220)' : 'rgb(18, 55, 45)';
-      assert.equal(textColors.wordmark,expectedInitial,width+' '+suffix+' initial logo contrast');
+      assert.equal(textColors.wordmark,'rgb(18, 55, 45)',width+' '+suffix+' original wordmark color preserved');
       assert.equal(textColors.button,expectedInitial,width+' '+suffix+' initial booking contrast');
       assert.equal(textColors.toggle,expectedInitial,width+' '+suffix+' initial menu contrast');
       assert.ok(Math.abs(initial.headerTop)<=2 && Math.abs(initial.heroTop)<=2,width+' '+suffix+' hero overlap: '+JSON.stringify(initial));

@@ -75,26 +75,21 @@ main > .cream-hero {
   .site-header, .site-header .header-cta { transition:none; }
 }
 
-/* Atmosphere uses a dark photo behind the transparent header.
-   White/ivory ink stays legible on the photo; scrolled/menu states use
-   the original dark-green ink on the cream header. */
-html[data-page="atmosphere"] .site-header.header-cream {
+/* Atmosphere: only nav-label, booking-label and menu-icon color.
+   The wordmark, header background, outlines, shadows and layout stay unchanged. */
+html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .nav-link,
+html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .header-cta,
+html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .menu-toggle {
   color: var(--creamWarm);
-  text-shadow: 0 1px 8px rgba(6,28,24,.38);
-  transition:
-    background-color .38s ease,
-    border-color .38s ease,
-    box-shadow .38s ease,
-    color .38s ease;
 }
-html[data-page="atmosphere"] .site-header.header-cream.is-scrolled,
-html[data-page="atmosphere"].is-menu-open .site-header.header-cream {
+html[data-page="atmosphere"] .site-header.header-cream.is-scrolled .nav-link,
+html[data-page="atmosphere"] .site-header.header-cream.is-scrolled .menu-toggle,
+html[data-page="atmosphere"].is-menu-open .site-header.header-cream .nav-link,
+html[data-page="atmosphere"].is-menu-open .site-header.header-cream .menu-toggle {
   color: var(--textOnLight);
-  text-shadow: none;
 }
-html[data-page="atmosphere"] .site-header.header-cream:not(.is-scrolled) .header-cta:focus-visible {
-  outline-color: var(--creamWarm);
-}
-html[data-page="atmosphere"].is-menu-open .site-header.header-cream .header-cta:focus-visible {
-  outline-color: var(--canvas);
+/* The solid booking CTA retains its original cream text on a green fill.
+   While the menu is open before scrolling, it must not inherit light-on-cream. */
+html[data-page="atmosphere"].is-menu-open .site-header.header-cream .header-cta {
+  color: var(--creamWarm);
 }
