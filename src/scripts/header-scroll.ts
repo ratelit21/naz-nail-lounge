@@ -1,18 +1,23 @@
 /** Scroll state for the existing sticky header; supports Astro ClientRouter. */
-const threshold=20;
+// Hysteresis prevents the expanding/collapsing iOS browser chrome from
+// repeatedly flipping a translucent header near the top of a page.
+const enterScrolled = 84;
+const exitScrolled = 12;
 let pending=0;
 function syncHeader() {
   const root = document.documentElement;
   const intro = root.classList.contains('intro-active');
   // Intro on mobile WebKit intentionally scrolls the texture under the iOS
   // status bar. That scroll is not a real user navigation state.
-  document.querySelector<HTMLElement>('.site-header')
-    ?.classList.toggle('is-scrolled', !intro && window.scrollY > threshold);
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const wasScrolled = header?.classList.contains('is-scrolled') ?? false;
+  const shouldScroll = !intro && window.scrollY > (wasScrolled ? exitScrolled : enterScrolled);
+  header?.classList.toggle('is-scrolled', shouldScroll);
 
   let darkBottom = false;
   // At the top of the page, keep the top Safari status bar in the hero's
   // cream palette even when a dark next section just touches the bottom edge.
-  if (!intro && window.scrollY > threshold) {
+  if (!intro && window.scrollY > exitScrolled) {
     const footer = document.querySelector<HTMLElement>('.site-footer');
     // When the document ends above the iPhone toolbar, Safari uses the BODY
     // background-color below it. The fallback must match the dark footer.
