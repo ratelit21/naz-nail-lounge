@@ -130,7 +130,7 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
     root.dataset.pageEntry = 'complete';
     // Arm scroll reveals while page-entering still hides [data-reveal], then lift the veil.
     revealSections();
-    root.classList.remove('intro-active','intro-revealing','intro-safari-bleed','page-entering');
+    root.classList.remove('intro-active','intro-revealing','page-entering');
   }
 
   function setupMenu() {
@@ -289,7 +289,7 @@ document.addEventListener('astro:before-swap',event=>{
   void route.viewTransition.ready.catch(()=>{});
   if(reduced()) route.viewTransition.skipTransition();
   const next = route.newDocument.documentElement;
-  next.classList.remove('intro-active','intro-revealing','intro-safari-bleed','page-entering','reveal-armed','is-menu-open');
+  next.classList.remove('intro-active','intro-revealing','page-entering','reveal-armed','is-menu-open');
   // Back/Forward restores the saved page position without replaying its hero.
   const assemble = !reduced() && route.navigationType !== 'traverse' && !route.to.hash;
   if(assemble) next.classList.add('page-entering');
