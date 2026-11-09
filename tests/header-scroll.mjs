@@ -67,6 +67,8 @@ try {
         .evaluateAll(els=>els.map(el=>getComputedStyle(el).textShadow));
       assert.ok(introShadows.every(shadow=>shadow!=='none' && shadow.includes('rgba(25, 9, 6')),
         width+' '+suffix+' missing consistent dark header shadow: '+JSON.stringify(introShadows));
+      assert.ok(introShadows.every(shadow=>!shadow.includes('7px')),
+        width+' '+suffix+' old excessive text glow still present');
       assert.ok(Math.abs(initial.headerTop)<=2 && Math.abs(initial.heroTop)<=2,width+' '+suffix+' hero overlap: '+JSON.stringify(initial));
       assert.ok(initial.html<=width+2 && initial.body<=width+2,width+' '+suffix+' overflow: '+JSON.stringify(initial));
       await page.evaluate(()=>window.scrollTo({top:500,behavior:'instant'}));
