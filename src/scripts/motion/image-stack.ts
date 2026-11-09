@@ -113,6 +113,11 @@ export class ImageStackEntrance {
     if (!desired) return;
     window.scrollTo({top: desired, behavior: 'instant'});
     this.pinnedIntroScroll = Math.max(0, window.scrollY);
+    // Some embedded WebKit hosts do not allow programmatic scrolling while
+    // overflow is locked; keep the cards centered instead of offsetting them.
+    document.documentElement.classList.toggle(
+      'intro-scroll-unavailable', this.pinnedIntroScroll < desired - 4,
+    );
   }
 
   /** Shift the in-flow cover as much as the scroll correction, avoiding a jump
@@ -141,6 +146,7 @@ export class ImageStackEntrance {
     // Safety / Escape can close the intro before the dissolve callback fires.
     this.unpinNativeSafariChrome();
     this.element.dataset.phase = 'complete';
+    document.documentElement.classList.remove('intro-scroll-unavailable');
     // display:none — opacity/visibility alone can still tint Safari 26 chrome.
     gsap.set(this.element, {display:'none', visibility:'hidden', pointerEvents:'none', opacity:0, clearProps:'transform'});
   }
