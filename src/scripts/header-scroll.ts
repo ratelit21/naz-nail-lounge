@@ -2,8 +2,36 @@
 const threshold=20;
 let pending=0;
 function syncHeader() {
+  const root = document.documentElement;
+  const intro = root.classList.contains('intro-active');
+  // Intro on mobile WebKit intentionally scrolls the texture under the iOS
+  // status bar. That scroll is not a real user navigation state.
   document.querySelector<HTMLElement>('.site-header')
-    ?.classList.toggle('is-scrolled', window.scrollY > threshold);
+    ?.classList.toggle('is-scrolled', !intro && window.scrollY > threshold);
+
+  let darkBottom = false;
+  if (!intro) {
+    const footer = document.querySelector<HTMLElement>('.site-footer');
+    // When the document ends above the iPhone toolbar, Safari uses the BODY
+    // background-color below it. The fallback must match the dark footer.
+    if (footer && footer.getBoundingClientRect().top <= window.innerHeight - 24) {
+      darkBottom = true;
+    } else {
+      const underToolbar = document.elementFromPoint(
+        Math.max(1, window.innerWidth / 2),
+        Math.max(1, window.innerHeight - 6),
+      );
+      darkBottom = !!underToolbar?.closest(
+        '.site-footer,.services-band,.about-bridge,.contacts:not(.contacts-cream),.cream-balance',
+      );
+    }
+  }
+  root.classList.toggle('chrome-bottom-dark', darkBottom);
+  // theme-color remains useful in Chrome/older Safari; iOS 26 reads the actual
+  // body background instead. Avoid permanently tinting the hero dark.
+  const theme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  const expected = intro ? '#bd7950' : darkBottom ? '#08251f' : '#eee1ce';
+  if (theme && theme.content !== expected) theme.content = expected;
 }
 function scheduleHeaderSync() {
   if(pending) return;
