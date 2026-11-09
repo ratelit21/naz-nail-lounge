@@ -98,14 +98,18 @@ main > .cream-hero {
   text-shadow: 0 1px 1px rgba(25,9,6,.16);
 }
 
-/* Atmosphere: lower the photographic panel so the flower sits entirely
-   below the transparent desktop header, rather than under its links.
-   The fade blends the repositioned photo into the original cream surface.
-   On mobile/tablet the image already starts below the header in document flow. */
+/* Atmosphere: shift the REAL photograph's crop down, not the image layer.
+   Keep the image full-bleed from the very top: no overlay, mask, fade or gap.
+   On wide screens the source image is taller than the hero; anchoring its top
+   reveals more of the photograph above the flower and lowers the flower.
+   Tablet/mobile keep their original image framing. */
 @media (min-width:1024px) {
   html[data-page="atmosphere"] .cream-hero-art {
-    top: calc(var(--header-h) + clamp(34px, 4vw, 65px));
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 84px);
-    mask-image: linear-gradient(to bottom, transparent, #000 84px);
+    inset: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  html[data-page="atmosphere"] .cream-hero-art img {
+    object-position: center top;
   }
 }

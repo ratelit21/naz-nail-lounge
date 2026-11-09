@@ -74,10 +74,34 @@ try {
           const nav=document.querySelector('.site-header').getBoundingClientRect();
           return {artTop:rect.top,headerBottom:nav.bottom,viewport:window.innerWidth};
         });
-        assert.ok(artBounds.artTop>=artBounds.headerBottom-2,
-          width+' flower must sit below header: '+JSON.stringify(artBounds));
-        if(width>=1024) assert.ok(artBounds.artTop>=artBounds.headerBottom+30,
-          width+' desktop photo must clear the links: '+JSON.stringify(artBounds));
+        if(width>=1024){
+          const actual=await page.locator('.cream-hero-art img').evaluate(img=>{
+            const style=getComputedStyle(img);
+            const layer=getComputedStyle(img.parentElement);
+            return {
+              objectPosition:style.objectPosition,
+              imageFit:style.objectFit,
+              mask:layer.maskImage,
+              webkitMask:layer.webkitMaskImage,
+              artTop:img.parentElement.getBoundingClientRect().top,
+              heroTop:document.querySelector('.cream-hero').getBoundingClientRect().top,
+              naturalWidth:img.naturalWidth,
+              naturalHeight:img.naturalHeight,
+              visibleWidth:img.clientWidth,
+              visibleHeight:img.clientHeight,
+            };
+          });
+          assert.equal(actual.objectPosition,'50% 0%',width+' photo must use top crop, not centered');
+          assert.equal(actual.imageFit,'cover',width+' image cover changed');
+          assert.equal(actual.mask,'none',width+' unwanted gradient mask');
+          assert.equal(actual.webkitMask,'none',width+' unwanted WebKit gradient mask');
+          assert.ok(Math.abs(actual.artTop-actual.heroTop)<=2,
+            width+' image panel must fill from the top without a blank gap: '+JSON.stringify(actual));
+          assert.ok(actual.naturalWidth>0 && actual.naturalHeight>0,width+' flower photo failed to load');
+        } else {
+          assert.ok(artBounds.artTop>=artBounds.headerBottom-2,
+            width+' mobile image must remain below navigation: '+JSON.stringify(artBounds));
+        }
       }
       assert.ok(Math.abs(initial.headerTop)<=2 && Math.abs(initial.heroTop)<=2,width+' '+suffix+' hero overlap: '+JSON.stringify(initial));
       assert.ok(initial.html<=width+2 && initial.body<=width+2,width+' '+suffix+' overflow: '+JSON.stringify(initial));
