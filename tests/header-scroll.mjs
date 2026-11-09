@@ -23,11 +23,16 @@ try {
       assert.ok(parseFloat(initial.border)>=1,width+' '+suffix+' outlined button');
       // A hover must NOT add green (or any other fill) over a transparent header.
       await page.locator('.site-header .header-cta').hover();
-      assert.equal(
-        await page.locator('.site-header .header-cta').evaluate(el => getComputedStyle(el).backgroundColor),
-        'rgba(0, 0, 0, 0)',
-        width+' '+suffix+' transparent-header booking hover must stay transparent'
-      );
+      const transparentHover=await page.locator('.site-header .header-cta').evaluate(el=>({
+        background:getComputedStyle(el).backgroundColor,
+        color:getComputedStyle(el).color,
+        opacity:getComputedStyle(el).opacity,
+        glow:getComputedStyle(el).boxShadow,
+      }));
+      assert.equal(transparentHover.background,'rgba(0, 0, 0, 0)',
+        width+' '+suffix+' transparent-header booking hover must stay transparent');
+      assert.equal(transparentHover.opacity,'1',width+' '+suffix+' hover must not dim text');
+      assert.notEqual(transparentHover.glow,'none',width+' '+suffix+' outline glow missing');
       const textColors=await page.evaluate(()=>{
         const h=document.querySelector('.site-header');
         return {
@@ -53,6 +58,22 @@ try {
         'rgb(18, 55, 45)',width+' '+suffix+' scrolled button text');
       assert.equal(await page.locator('.site-header .header-cta').evaluate(e=>getComputedStyle(e).borderTopColor),
         'rgb(8, 37, 31)',width+' '+suffix+' scrolled button outline');
+      // Hover on a filled header changes only the frame, never text or fill.
+      const beforeHover=await page.locator('.site-header .header-cta').evaluate(el=>({
+        background:getComputedStyle(el).backgroundColor,
+        color:getComputedStyle(el).color,
+      }));
+      await page.locator('.site-header .header-cta').hover();
+      const afterHover=await page.locator('.site-header .header-cta').evaluate(el=>({
+        background:getComputedStyle(el).backgroundColor,
+        color:getComputedStyle(el).color,
+        opacity:getComputedStyle(el).opacity,
+        glow:getComputedStyle(el).boxShadow,
+      }));
+      assert.equal(afterHover.background,beforeHover.background,width+' '+suffix+' hover changed button fill');
+      assert.equal(afterHover.color,beforeHover.color,width+' '+suffix+' hover changed text');
+      assert.equal(afterHover.opacity,'1',width+' '+suffix+' text faded on filled header');
+      assert.notEqual(afterHover.glow,'none',width+' '+suffix+' scrolled frame glow missing');
       if(suffix && width>=1024){
         const navColors=await page.locator('.site-header .nav-desktop .nav-link').evaluateAll(nodes=>nodes.map(e=>getComputedStyle(e).color));
         assert.deepEqual(navColors.slice(0,3),Array(3).fill('rgb(18, 55, 45)'),width+' scrolled navigation contrast');

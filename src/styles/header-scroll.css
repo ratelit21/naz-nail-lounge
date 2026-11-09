@@ -21,7 +21,7 @@
   color: inherit;
   border: 1px solid currentColor;
   opacity: 1;
-  transition: background-color .38s ease, color .38s ease, border-color .38s ease, opacity .2s ease;
+  transition: background-color .38s ease, color .38s ease, border-color .3s ease, box-shadow .3s ease;
 }
 .site-header.header-cream.is-scrolled .header-cta,
 html.is-menu-open .site-header.header-cream .header-cta {
@@ -35,14 +35,27 @@ html.is-menu-open .site-header:not(.header-cream) .header-cta {
   color: var(--canvas);
   border-color: var(--creamWarm);
 }
+/* No text fading, no fill swapping: only the NAZ gold hairline glows.
+   This covers both the transparent and filled header on both pages. */
 @media (hover:hover) {
-  /* The transparent header always keeps an unfilled booking outline,
-     including hover. Apply hover feedback only once the header is solid. */
+  .site-header .header-cta:hover {
+    opacity: 1;
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 1px rgba(197,155,101,.66),
+      0 0 13px rgba(197,155,101,.42),
+      inset 0 0 8px rgba(197,155,101,.13);
+  }
   .site-header:not(.is-scrolled) .header-cta:hover {
     background-color: transparent;
-    opacity: 1;
   }
-  .site-header.is-scrolled .header-cta:hover { opacity: .75; }
+}
+.site-header .header-cta:focus-visible {
+  opacity: 1;
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px rgba(197,155,101,.66),
+    0 0 13px rgba(197,155,101,.42);
 }
 /* Move only the hero's painted background behind the sticky header.
    Compensating height and padding retain the existing content layout. */
