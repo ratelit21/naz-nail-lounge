@@ -96,7 +96,7 @@ const introFirstPaintCSS = `html.intro-active{--intro-preview:url("data:image/we
         }
       }
       window.nazSafetyTimer = setTimeout(() => {
-        root.classList.remove('intro-active', 'intro-revealing', 'intro-safari-bleed', 'page-entering');
+        root.classList.remove('intro-active', 'intro-revealing', 'page-entering');
         root.dataset.pageEntry = 'complete';
         document.querySelector('[data-image-stack]')?.setAttribute('style', 'display:none');
         document.querySelectorAll('[data-page-part], [data-page-visual] img').forEach(el => {
