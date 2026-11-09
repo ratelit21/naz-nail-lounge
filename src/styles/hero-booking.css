@@ -79,7 +79,9 @@
   .hero-booking-label { font-size: 20px; }
 }
 @media (max-width: 374px) {
-  .hero-booking { width: min(100%, 216px); min-width: 0; }
+  /* The slot is shrink-to-fit inside a flex column; give it a real touch target. */
+  .hero-booking-slot { width: 216px; }
+  .hero-booking { width: 100%; min-width: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-booking::after { transition: none; }
