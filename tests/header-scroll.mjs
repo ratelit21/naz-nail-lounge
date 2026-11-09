@@ -29,7 +29,7 @@ try {
           toggle:getComputedStyle(h.querySelector('[data-menu-open]')).color,
         };
       });
-      const expectedInitial='rgb(18, 55, 45)';
+      const expectedInitial=suffix ? 'rgb(8, 37, 31)' : 'rgb(18, 55, 45)';
       assert.equal(textColors.wordmark,'rgb(18, 55, 45)',width+' '+suffix+' original wordmark color preserved');
       assert.equal(textColors.button,expectedInitial,width+' '+suffix+' initial booking contrast');
       assert.equal(textColors.toggle,expectedInitial,width+' '+suffix+' initial menu contrast');
