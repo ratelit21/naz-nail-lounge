@@ -104,10 +104,23 @@ main > .cream-hero {
   main > .hero { min-height: calc(660px + var(--header-h)); }
 }
 @media (max-width:1023px) {
-  main > .cream-hero { height:auto; min-height:0; }
+  /* The photo used to begin AFTER the transparent sticky header: Safari saw a
+     solid beige rectangle through it. Put the photo behind the header just
+     like the homepage's stone layer, while retaining the same amount of
+     photograph visible below the navigation. */
+  main > .cream-hero { height:auto; min-height:0; padding-top:0; }
+  main > .cream-hero .cream-hero-art {
+    flex: none;
+    aspect-ratio: auto;
+    height: calc(min(72vw, 420px) + var(--header-h));
+    max-height: none;
+  }
 }
 @media (max-width:767px) {
   main > .hero { height:auto; min-height:0; }
+  main > .cream-hero .cream-hero-art {
+    height: calc(min(78vw, 360px) + var(--header-h));
+  }
 }
 @media (prefers-reduced-motion:reduce) {
   .site-header, .site-header .header-cta { transition:none; }
