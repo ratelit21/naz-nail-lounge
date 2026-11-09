@@ -32,7 +32,7 @@ const strips = [
         widths={[640, 960, 1280, 1600]}
         sizes={featured ? '(max-width:767px) 100vw, 34vw' : '(max-width: 767px) 90vw, 34vw'}
         quality={88}
-        loading="lazy"
+        loading={featured ? "eager" : "lazy"}
         decoding="async"
         style={`object-position: ${strip.pos}`}
       />
