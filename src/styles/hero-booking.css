@@ -1,5 +1,5 @@
 /* NAZ first-screen editorial CTA: original underline interaction preserved.
-   The Poiret One lettering and proportional tracking match the header. */
+   Tenor Sans gives the action a clear hierarchy against Poiret One headings. */
 .hero-booking-slot {
   margin-top: clamp(30px, 3.4vw, 48px);
   align-self: flex-start;
@@ -24,7 +24,7 @@
   background: transparent;
   color: var(--canvas);
   text-decoration: none;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-weight: 400;
   line-height: 1.25;
   opacity: 1;
@@ -33,8 +33,8 @@
 }
 .hero-booking-label {
   display: block;
-  font-size: clamp(26px, 2.1vw, 31px);
-  letter-spacing: .018em;
+  font-size: clamp(23px, 1.9vw, 26px);
+  letter-spacing: .012em;
   white-space: nowrap;
 }
 .hero-booking::after {
@@ -75,7 +75,7 @@
   .hero-booking-slot { margin-top: 30px; }
   .cream-hero-booking-slot { margin-top: 29px; }
   .hero-booking { min-height: 56px; padding-bottom: 14px; }
-  .hero-booking-label { font-size: 28px; }
+  .hero-booking-label { font-size: 24px; }
 }
 @media (max-width: 374px) {
   /* The slot is shrink-to-fit inside a flex column; give it a real touch target. */
