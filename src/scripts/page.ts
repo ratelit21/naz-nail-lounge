@@ -62,6 +62,7 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
   if(boot.nazSafetyTimer) clearTimeout(boot.nazSafetyTimer);
   // Intro cards + soft hero assembly need a longer fail-open than assemble-only.
   const safety = window.setTimeout(finish, fullIntro ? 15000 : 3200);
+  if(fullIntro) window.scrollTo({top:0,behavior:'instant'});
   if(fullIntro || assemble) {
     // Keep hero frozen under the stack / route snapshot; class may already be set by Layout.
     if(!fullIntro) root.classList.add('page-entering');
@@ -128,9 +129,10 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
     stack?.hide();
     entry.reset();
     root.dataset.pageEntry = 'complete';
-    // Arm scroll reveals while page-entering still hides [data-reveal], then lift the veil.
-    revealSections();
     root.classList.remove('intro-active','intro-revealing','page-entering');
+    // Observe only after revealing the page: WebKit lazy images and geometry
+    // must not be initialized inside a visibility-hidden subtree.
+    revealSections();
   }
 
   function setupMenu() {

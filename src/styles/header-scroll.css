@@ -1,4 +1,16 @@
 /* Transparent navigation shell. The original NAZ palette stays unchanged. */
+/* iOS 26 glass toolbar sampling: while the header is transparent,
+   let WebKit sample the real hero texture below it instead of extending a
+   flat solid strip. Interactive children keep their hit targets.
+   Once scrolled, the filled cream header deliberately owns the toolbar tint. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 1023px) {
+    .site-header:not(.is-scrolled) { pointer-events: none; }
+    .site-header:not(.is-scrolled) a,
+    .site-header:not(.is-scrolled) button { pointer-events: auto; }
+  }
+}
+
 /* During Astro route swaps, avoid an extra .38s paint tween in the persistent
    header while the new page's scroll/hover states settle. */
 html.header-route-sync .site-header,
