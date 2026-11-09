@@ -125,9 +125,6 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
     if(disposed || settled) return;
     settled = true;
     clearTimeout(safety);
-    if(fullIntro) {
-      try { localStorage.setItem('naz-intro-seen', '1'); } catch {}
-    }
     stack?.hide();
     entry.reset();
     root.dataset.pageEntry = 'complete';
@@ -216,7 +213,6 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
       // Home first visit: card intro → then soft hero assembly (not a hard cut).
       if(fullIntro) {
         await stack!.play();
-        try { localStorage.setItem('naz-intro-seen', '1'); } catch {}
         // Drop terracotta root + fixed/bleed cover before hero assembly so Safari
         // chrome does not keep the intro tint through the whole page-entry beat.
         stack!.hide();
