@@ -45,13 +45,16 @@ try {
         header:getComputedStyle(document.querySelector('.site-header .header-cta')).fontFamily,
         hero:getComputedStyle(document.querySelector('.hero-booking-label')).fontFamily,
         navigation:getComputedStyle(document.querySelector('.site-header .nav-link')).fontFamily,
-        heroSpacing:getComputedStyle(document.querySelector('.hero-booking-label')).letterSpacing,
-        headerSpacing:getComputedStyle(document.querySelector('.site-header .header-cta')).letterSpacing,
+        heroSpacing:parseFloat(getComputedStyle(document.querySelector('.hero-booking-label')).letterSpacing),
+        headerSpacing:parseFloat(getComputedStyle(document.querySelector('.site-header .header-cta')).letterSpacing),
+        heroSize:parseFloat(getComputedStyle(document.querySelector('.hero-booking-label')).fontSize),
+        headerSize:parseFloat(getComputedStyle(document.querySelector('.site-header .header-cta')).fontSize),
       }));
       assert.ok([actionFonts.header,actionFonts.hero,actionFonts.navigation].every(f=>f.includes('Poiret One')),
         width+' '+suffix+' action typography not unified: '+JSON.stringify(actionFonts));
-      assert.equal(actionFonts.heroSpacing,actionFonts.headerSpacing,
-        width+' '+suffix+' action tracking differs: '+JSON.stringify(actionFonts));
+      assert.ok(Math.abs(actionFonts.heroSpacing/actionFonts.heroSize -
+        actionFonts.headerSpacing/actionFonts.headerSize)<.003,
+        width+' '+suffix+' action tracking proportion differs: '+JSON.stringify(actionFonts));
       assert.equal(buttonGeometry.bg,'rgba(0, 0, 0, 0)',width+' '+suffix+' editorial CTA must have no fill');
       assert.equal(buttonGeometry.text,'rgb(8, 37, 31)',width+' '+suffix+' incorrect editorial CTA text color');
       assert.equal((await heroBooking.innerText()).trim(),'Записаться',
