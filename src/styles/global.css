@@ -115,7 +115,22 @@ a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;border:0;
 .about-bridge .eyebrow{color:var(--text)}
 .about-bridge-title{font-size:clamp(44px,4.8vw,68px);margin-top:20px;line-height:1.05;letter-spacing:-.025em}
 .about-bridge-body{margin-top:22px;font-size:var(--fs-body);line-height:1.75;color:var(--text);max-width:30ch}
-.about-more{margin-top:28px;--cta-text-ink:var(--creamWarm)}
+.about-more{
+  margin-top:28px;
+  --cta-text-ink:var(--creamWarm);
+  min-height:60px;
+  padding:12px 24px;
+  border:1px solid currentColor;
+  border-radius:2px;
+  background:transparent;
+  justify-content:center;
+  text-align:center;
+}
+.about-more::after{content:none}
+@media(hover:hover){
+  .about-more:hover{background:transparent;color:var(--accentHover)}
+}
+.about-more:active{background:transparent}
 .contacts{--contact-ink:var(--text);--contact-muted:var(--muted);--contact-rule:var(--border-soft);--contact-hover:var(--accentHover);--focus:var(--cream);background:linear-gradient(120deg,#08251fed,#163b2ce8),var(--material-stone) center/cover;color:var(--contact-ink);padding-block:clamp(40px,4vw,64px)}
 .contacts-cream{--contact-ink:var(--textOnLight);--contact-muted:var(--mutedOnLight);--contact-rule:var(--border-on-light);--contact-hover:var(--canvas);--focus:var(--canvas);background:linear-gradient(#eee1ceb3,#eee1ceb3),var(--material-stone) center/cover}
 .contacts-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:center;gap:clamp(32px,6vw,96px)}
