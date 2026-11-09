@@ -6,6 +6,14 @@ html.header-route-sync .site-header .header-cta,
 html.header-route-sync .site-header .nav-link::after {
   transition: none !important;
 }
+/* On home -> Atmosphere, the two fully opaque View Transition header
+   snapshots otherwise overlap. Keep only the destination header to avoid
+   the brief double-painted text and button glow. The reverse route stays as-is. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="atmosphere"]::view-transition-old(naz-header) {
+    opacity: 0;
+  }
+}
 .site-header, .site-header.header-cream {
   background: transparent;
   border-bottom-color: transparent;
