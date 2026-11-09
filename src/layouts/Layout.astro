@@ -53,6 +53,7 @@ const introFirstPaintCSS = `html.intro-active{--intro-preview:url("data:image/we
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#eee1ce" />
     {nav === 'home' && <style is:inline set:html={introFirstPaintCSS} />}
     {nav === 'home' && <>
       <link rel="preload" as="image" href={withBase('/textures/terracotta-plaster.webp')} media="(min-width: 768px)" fetchpriority="high" />
