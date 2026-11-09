@@ -13,6 +13,8 @@ import Footer from '../components/Footer.astro';
 import Preloader from '../components/Preloader.astro';
 import { ClientRouter } from 'astro:transitions';
 import { withBase } from '../lib/base';
+import sharp from 'sharp';
+import path from 'node:path';
 
 interface Props {
   title?: string;
@@ -27,6 +29,21 @@ const {
   theme = 'dark',
   nav = 'home',
 } = Astro.props;
+
+// Tiny inlined versions of the REAL clay texture are present at first paint,
+// even on a cold connection. Full-resolution variants load over them.
+const previewFor = async (filename: string) => {
+  const source = path.join(process.cwd(), 'public', 'textures', filename);
+  return (await sharp(source).resize({width: 48}).webp({quality: 34, effort: 2}).toBuffer()).toString('base64');
+};
+const [introPreviewDesktop, introPreviewMobile] = nav === 'home'
+  ? await Promise.all([
+      previewFor('terracotta-plaster.webp'),
+      previewFor('terracotta-plaster-mobile.webp'),
+    ])
+  : ['', ''];
+const introFirstPaintCSS = `html.intro-active{--intro-preview:url("data:image/webp;base64,${introPreviewDesktop}")}`
+  + `@media(max-width:767px){html.intro-active{--intro-preview:url("data:image/webp;base64,${introPreviewMobile}")}}`;
 ---
 
 <!doctype html>
@@ -36,6 +53,11 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light" />
+    {nav === 'home' && <style is:inline set:html={introFirstPaintCSS} />}
+    {nav === 'home' && <>
+      <link rel="preload" as="image" href={withBase('/textures/terracotta-plaster.webp')} media="(min-width: 768px)" fetchpriority="high" />
+      <link rel="preload" as="image" href={withBase('/textures/terracotta-plaster-mobile.webp')} media="(max-width: 767px)" fetchpriority="high" />
+    </>}
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <link rel="preload" href={poiretLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={poiretCyrillic} as="font" type="font/woff2" crossorigin />
@@ -65,7 +87,9 @@ const {
         let introSeen = false;
         try { introSeen = localStorage.getItem('naz-intro-seen') === '1'; } catch {}
         if(root.dataset.page === 'home' && !internal && !introSeen) {
-          root.classList.add('intro-active');
+          // Arm the page's invisible assembly state BEFORE any intro frame can paint.
+          root.classList.add('intro-active', 'page-entering');
+          root.dataset.pageEntry = 'pending';
           try { localStorage.setItem('naz-intro-seen', '1'); } catch {}
         } else {
           root.classList.add('page-entering');
