@@ -23,14 +23,33 @@ try {
         prepared: root.classList.contains('page-entering'),
         preview: getComputedStyle(backdrop).backgroundImage,
         rootPreview: getComputedStyle(root).backgroundImage,
-        lowerVisibility: getComputedStyle(document.querySelector('[data-reveal]')).visibility,
+        lowerOpacity: getComputedStyle(document.querySelector('[data-reveal]')).opacity,
       };
     });
     assert.ok(boot.intro, 'Fresh visitor must see intro');
+    if (engineName === 'webkit' && width < 768) {
+      const layout = await page.evaluate(() => {
+        const el = document.querySelector('[data-image-stack]');
+        const style = getComputedStyle(el);
+        return {
+          supported: CSS.supports('-webkit-touch-callout', 'none'),
+          position: style.position,
+          height: parseFloat(style.height),
+          marginBottom: parseFloat(style.marginBottom),
+        };
+      });
+      if (layout.supported) {
+        assert.equal(layout.position, 'relative', 'iOS intro must render in normal document flow');
+        assert.ok(layout.height > 844, 'The background must extend past the Safari bottom bar');
+        assert.ok(Math.abs(layout.height + layout.marginBottom) <= 1,
+          'In-flow intro changed the page height: ' + JSON.stringify(layout));
+      }
+    }
+
     assert.ok(boot.prepared, 'Hero must be prepared before intro starts');
     assert.ok(boot.preview.includes('data:image/webp;base64,'), 'No inline intro photo placeholder');
     assert.ok(boot.rootPreview.includes('data:image/webp;base64,'), 'Root still flashes solid orange');
-    assert.equal(boot.lowerVisibility, 'hidden', 'Terracotta section visible during intro');
+    assert.equal(boot.lowerOpacity, '0', 'Lower sections should remain visually covered during intro');
     await page.waitForFunction(() =>
       document.querySelector('[data-image-stack]')?.dataset.phase === 'revealing',
       null, {timeout: 16000});
@@ -40,13 +59,13 @@ try {
         assembling: root.dataset.pageEntry,
         entering: root.classList.contains('page-entering'),
         contentVisibility: getComputedStyle(document.querySelector('[data-site-content]')).visibility,
-        lowerVisibility: getComputedStyle(document.querySelector('[data-reveal]')).visibility,
+        lowerOpacity: getComputedStyle(document.querySelector('[data-reveal]')).opacity,
       };
     });
     assert.equal(revealing.assembling, 'assembling', 'Hero assembly did not overlap intro dissolve');
     assert.ok(revealing.entering, 'Hero preparation was lifted too soon');
     assert.equal(revealing.contentVisibility, 'visible', 'Main page did not reveal during fade');
-    assert.equal(revealing.lowerVisibility, 'hidden', 'Terracotta section flashed through the cover');
+    assert.equal(revealing.lowerOpacity, '0', 'Lower sections flashed through the cover');
     await page.waitForFunction(() => document.documentElement.dataset.pageEntry === 'complete'
       && !document.documentElement.classList.contains('intro-active')
       && !document.documentElement.classList.contains('page-entering'),
