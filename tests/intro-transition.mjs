@@ -1,11 +1,12 @@
-import {chromium} from 'playwright';
+import {chromium, firefox, webkit} from 'playwright';
 import assert from 'node:assert/strict';
 
-const browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
+for (const [engineName, engine] of Object.entries({chromium, firefox, webkit})) {
+const browser = await engine.launch({headless: true, ...(engineName === 'chromium' ? {args: ['--no-sandbox']} : {})});
 const base = 'http://127.0.0.1:4321/naz-nail-lounge/';
 
 try {
-  for (const width of [390, 1440]) {
+  for (const width of [320, 390, 1440]) {
     const context = await browser.newContext({
       viewport: {width, height: width < 800 ? 844 : 900},
       reducedMotion: 'no-preference',
@@ -61,8 +62,9 @@ try {
     await page.reload({waitUntil: 'domcontentloaded'});
     assert.equal(await page.locator('html.intro-active').count(), 0, 'Intro replayed on reload');
     await context.close();
-    console.log(width + 'px: cold first-paint / synchronized reveal / reload PASS');
+    console.log(engineName + ' / ' + width + 'px: cold first-paint / synchronized reveal / reload PASS');
   }
 } finally {
   await browser.close();
+}
 }
