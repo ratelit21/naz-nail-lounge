@@ -7,6 +7,10 @@
   --text: #f3e8d8;
   --textOnLight: #12372d;
   --intro-text: #08251f;
+  /* Solid chrome tint under Safari 26 when it cannot show scrolled pixels. */
+  --intro-chrome: #bd7950;
+  --intro-ios-top-overscan: 110px;
+  --intro-ios-bottom-overscan: 170px;
   /* Absolute under Astro `base` so GitHub Pages and local preview both resolve. */
   --material-clay: url("/naz-nail-lounge/textures/terracotta-plaster.webp");
   --material-stone: url("/naz-nail-lounge/textures/ivory-travertine.webp");

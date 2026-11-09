@@ -5,7 +5,8 @@
  * After the ring settles, a short Codrops-style breath (slow group turn + a few
  * card flips) keeps the scene alive before a soft dissolve into the site —
  * instead of cutting like a slide deck. Card sizes 96x144 / 128x192.
- * All browsers use one fixed overlay; no mobile scroll pin or in-flow mode.
+ * A Safari-only in-flow cover lets actual clay pixels extend into iOS 26 glass UI.
+ * Other engines retain the fixed overlay; both follow the same card timeline.
  * Unmodified reference: studio/motion-reference/. License: /licenses/codrops-image-stack.txt
  */
 import gsap from 'gsap';
@@ -16,6 +17,7 @@ export class ImageStackEntrance {
   private settle?: () => void;
   private escape?: (event: KeyboardEvent) => void;
   private deadline?: number;
+  private pinnedIntroScroll = 0;
   constructor(private element: HTMLElement) {
     this.cards = [...element.querySelectorAll<HTMLElement>('[data-stack-card]')];
   }
@@ -33,6 +35,7 @@ export class ImageStackEntrance {
     // Layout must be live before reading card size — display:none reports 0.
     gsap.set(this.element, {display:'block', visibility:'hidden', opacity:0});
     void this.element.offsetHeight;
+    this.pinNativeSafariChrome();
     const cardW = card.clientWidth || (desktop ? 128 : 96);
     const cardH = card.clientHeight || (desktop ? 192 : 144);
     const radius1 = 50 + cardH / 2;
@@ -88,6 +91,9 @@ export class ImageStackEntrance {
       .to(headings, {opacity:.92, duration:.55, ease:'power1.inOut'}, '<')
       .call(() => {
         this.element.dataset.phase = 'revealing';
+        // Preserve the visual cover while resetting the document scroll beneath it.
+        // Otherwise the hero would assemble 110px offscreen on iOS 26.
+        this.unpinNativeSafariChrome();
         root.classList.add('intro-revealing');
         onReveal?.();
       })
@@ -95,6 +101,34 @@ export class ImageStackEntrance {
       .to(headings, {opacity:0, filter:`blur(${desktop ? 14 : 8}px)`, duration:.45, ease:'power2.in'}, '<')
       .to(this.element, {opacity:0, duration:.55, ease:'power2.inOut'}, '<'); // same exit timing everywhere
     return done;
+  }
+
+  /** Only the in-flow iOS stage needs real scrollable pixels above the viewport.
+   *  The inline clay preview covers the initial paint before this runs. */
+  private pinNativeSafariChrome() {
+    if (getComputedStyle(this.element).position !== 'relative') return;
+    const cssTop = getComputedStyle(document.documentElement)
+      .getPropertyValue('--intro-ios-top-overscan');
+    const desired = parseFloat(cssTop) || 0;
+    if (!desired) return;
+    window.scrollTo({top: desired, behavior: 'instant'});
+    this.pinnedIntroScroll = Math.max(0, window.scrollY);
+    // Some embedded WebKit hosts do not allow programmatic scrolling while
+    // overflow is locked; keep the cards centered instead of offsetting them.
+    document.documentElement.classList.toggle(
+      'intro-scroll-unavailable', this.pinnedIntroScroll < desired - 4,
+    );
+  }
+
+  /** Shift the in-flow cover as much as the scroll correction, avoiding a jump
+   *  while its last frames dissolve into the freshly prepared hero. */
+  private unpinNativeSafariChrome() {
+    if (!this.pinnedIntroScroll) return;
+    const offset = this.pinnedIntroScroll;
+    gsap.set(this.element, {y: -offset});
+    window.scrollTo({top: 0, behavior: 'instant'});
+    this.pinnedIntroScroll = 0;
+    document.querySelector('.site-header')?.classList.remove('is-scrolled');
   }
 
   private complete() {
@@ -109,8 +143,11 @@ export class ImageStackEntrance {
   hide() {
     this.timeline?.kill();
     this.complete();
+    // Safety / Escape can close the intro before the dissolve callback fires.
+    this.unpinNativeSafariChrome();
     this.element.dataset.phase = 'complete';
+    document.documentElement.classList.remove('intro-scroll-unavailable');
     // display:none — opacity/visibility alone can still tint Safari 26 chrome.
-    gsap.set(this.element, {display:'none', visibility:'hidden', pointerEvents:'none', opacity:0});
+    gsap.set(this.element, {display:'none', visibility:'hidden', pointerEvents:'none', opacity:0, clearProps:'transform'});
   }
 }

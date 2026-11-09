@@ -5,9 +5,13 @@
 html{background:var(--cream);color-scheme:light;min-height:100%;scroll-behavior:auto;scroll-padding-top:calc(var(--header-h) + 16px)}
 html[data-theme=cream]{background:var(--cream);color-scheme:light}
 html[data-contact-navigation]{scroll-behavior:auto!important;overflow-anchor:none}
-body{margin:0;color:var(--text);background:transparent;font-family:var(--font-body);font-size:var(--fs-body);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:clip}
+body{margin:0;color:var(--text);background:var(--cream);font-family:var(--font-body);font-size:var(--fs-body);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:clip}
 body.theme-cream{color:var(--textOnLight)}
 [data-site-content]{min-height:100vh;min-height:100dvh;background:linear-gradient(#08251fed,#08251ffa),var(--material-stone) center/cover,var(--canvas)}
+/* Safari 26 samples BODY background-color for its bottom glass toolbar.
+   Match the section touching that edge, not a fixed cream page root. */
+html.chrome-bottom-dark,
+html.chrome-bottom-dark body {background-color:var(--canvas)}
 .theme-cream [data-site-content]{background:linear-gradient(#eee1ceb3,#eee1ceb3),var(--material-stone) center/1440px auto,var(--cream)}
 body:has(.nav-panel.is-open){overflow:hidden}
 html.is-menu-open{overflow:hidden}
@@ -198,8 +202,8 @@ html.reveal-armed [data-reveal]:not([data-revealed]) [data-team-copy]{
 .intro-active .image-stack-entrance{display:block;visibility:visible}
 /* Use the same real texture everywhere, with an inlined photo placeholder
    under the full-res layer. Do not expose an orange solid first frame. */
-html.intro-active{overflow:hidden;background:var(--material-clay) center/cover,var(--intro-preview) center/cover}
-html.intro-active body{background:var(--material-clay) center/cover,var(--intro-preview) center/cover}
+html.intro-active{overflow:hidden;background:var(--material-clay) center/cover,var(--intro-preview) center/cover,var(--intro-chrome)}
+html.intro-active body{background:var(--material-clay) center/cover,var(--intro-preview) center/cover,var(--intro-chrome)}
 /* Keep the clay texture through the dissolve; remove it only when the overlay is gone.
    Mobile WebKit cannot composite a fixed element behind translucent Safari chrome.
    Use a normal-flow, overscanned cover with a negative margin to prevent layout
@@ -212,15 +216,19 @@ html.intro-active body{background:var(--material-clay) center/cover,var(--intro-
       display: block;
       visibility: visible;
       width: 100%;
-      height: calc(100dvh + 180px);
-      margin-bottom: calc(-100dvh - 180px);
+      height: calc(100dvh + var(--intro-ios-top-overscan) + var(--intro-ios-bottom-overscan));
+      margin-bottom: calc(-100dvh - var(--intro-ios-top-overscan) - var(--intro-ios-bottom-overscan));
       overflow: hidden;
     }
     html.intro-active .entrance-scene,
     html.intro-active .entrance-headings {
-      inset: 0 0 auto;
+      inset: var(--intro-ios-top-overscan) 0 auto;
       width: 100%;
       height: 100dvh;
+    }
+    html.intro-active.intro-scroll-unavailable .entrance-scene,
+    html.intro-active.intro-scroll-unavailable .entrance-headings {
+      top: 0;
     }
   }
 }

@@ -24,9 +24,13 @@ try {
         preview: getComputedStyle(backdrop).backgroundImage,
         rootPreview: getComputedStyle(root).backgroundImage,
         lowerOpacity: getComputedStyle(document.querySelector('[data-reveal]')).opacity,
+        rootBackground: getComputedStyle(root).backgroundColor,
+        bodyBackground: getComputedStyle(document.body).backgroundColor,
       };
     });
     assert.ok(boot.intro, 'Fresh visitor must see intro');
+    assert.equal(boot.rootBackground, 'rgb(189, 121, 80)', 'Safari intro root must not be transparent/white');
+    assert.equal(boot.bodyBackground, 'rgb(189, 121, 80)', 'Safari intro body must tint browser chrome terracotta');
     if (engineName === 'webkit' && width < 768) {
       const layout = await page.evaluate(() => {
         const el = document.querySelector('[data-image-stack]');
@@ -62,6 +66,8 @@ try {
         lowerOpacity: getComputedStyle(document.querySelector('[data-reveal]')).opacity,
       };
     });
+    const scrollOnReveal = await page.evaluate(() => scrollY);
+    assert.ok(scrollOnReveal <= 2, 'Intro must reset scroll under the cover before hero reveal: ' + scrollOnReveal);
     assert.equal(revealing.assembling, 'assembling', 'Hero assembly did not overlap intro dissolve');
     assert.ok(revealing.entering, 'Hero preparation was lifted too soon');
     assert.equal(revealing.contentVisibility, 'visible', 'Main page did not reveal during fade');
