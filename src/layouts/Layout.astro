@@ -15,6 +15,8 @@ import { ClientRouter } from 'astro:transitions';
 import { withBase } from '../lib/base';
 import sharp from 'sharp';
 import path from 'node:path';
+import { getImage } from 'astro:assets';
+import atmosphereBotanical from '../assets/photos/campaign-botanical.jpg';
 
 interface Props {
   title?: string;
@@ -42,12 +44,17 @@ const [introPreviewDesktop, introPreviewMobile] = nav === 'home'
       previewFor('terracotta-plaster-mobile.webp'),
     ])
   : ['', ''];
+// Match the real Atmosphere photo in the iOS status-bar canvas, not a
+// generic flat beige fill. Reuse the first srcset-sized optimized image.
+const atmosphereChromeImage = nav === 'atmosphere'
+  ? await getImage({src: atmosphereBotanical, width: 800, format: 'webp', quality: 90})
+  : null;
 const introFirstPaintCSS = `html.intro-active{--intro-preview:url("data:image/webp;base64,${introPreviewDesktop}");background:var(--intro-preview) center/cover no-repeat var(--intro-chrome,#bd7950)}`
   + `@media(max-width:767px){html.intro-active{--intro-preview:url("data:image/webp;base64,${introPreviewMobile}")}}`;
 ---
 
 <!doctype html>
-<html lang="ru" data-theme={theme} data-page={nav}>
+<html lang="ru" data-theme={theme} data-page={nav} style={atmosphereChromeImage ? `--atmosphere-chrome-photo:url("${atmosphereChromeImage.src}")` : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
