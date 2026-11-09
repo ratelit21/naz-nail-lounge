@@ -6,10 +6,11 @@ html.header-route-sync .site-header .header-cta,
 html.header-route-sync .site-header .nav-link::after {
   transition: none !important;
 }
-/* On home -> Atmosphere, the two fully opaque View Transition header
-   snapshots otherwise overlap. Keep only the destination header to avoid
-   the brief double-painted text and button glow. The reverse route stays as-is. */
+/* On both page-to-page routes, keep only the destination header snapshot.
+   This avoids the brief double-painted logo and buttons when returning from
+   Atmosphere via the brand link as well as when entering Atmosphere. */
 @media (prefers-reduced-motion: no-preference) {
+  html[data-page="home"]::view-transition-old(naz-header),
   html[data-page="atmosphere"]::view-transition-old(naz-header) {
     opacity: 0;
   }
