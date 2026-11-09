@@ -55,7 +55,7 @@ export const copy = {
   aboutEyebrow: 'Атмосфера',
   aboutTitle: 'Внутри NAZ',
   aboutBody: 'Зал, материалы и детали нашего пространства.',
-  aboutLink: 'Посмотреть атмосферу',
+  aboutLink: 'Заглянуть внутрь',
   bookingTitle: 'Запись',
   bookingLead: 'Выберите услугу и время в онлайн-записи.',
   cta: 'Записаться',
