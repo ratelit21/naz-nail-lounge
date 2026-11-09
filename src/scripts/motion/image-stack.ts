@@ -1,12 +1,15 @@
 /*! Image Stack Entrance — Codrops / deadrabbbbit (MIT).
  * Source: https://github.com/d3adrabbit/EntranceAnimationForImages/blob/main/js/index.js
  * Blob b1edee491fd99742b2069df2d953f0b5a09838a2; css/base.css blob 676cd7158bbfa8f68e37cae56e8042ac66d2593f.
- * Finite opening keeps the original 8-card transforms, stagger and durations.
- * After the ring settles, a short Codrops-style breath (slow group turn + a few
- * card flips) keeps the scene alive before a soft dissolve into the site —
- * instead of cutting like a slide deck. Card sizes 96x144 / 128x192.
- * iOS Safari 26: mobile WebKit uses in-flow bleed + scroll pin for chrome.
- * Unmodified reference: studio/motion-reference/. License: /licenses/codrops-image-stack.txt
+ * The finite opening retains the original 8-card transforms, stagger and durations.
+ * Owner-requested size adaptation: cards 96x144 / 128x192, larger wordmark.
+ * Ring radius follows Codrops (radius2 = outer - radius1) with a larger outer
+ * budget so the centre hole stays open for the wordmark. Brand/photos replaced.
+ * Perpetual idle rotations omitted; the site reveals after the opening.
+ * iOS Safari 26: fixed layers never paint under Liquid Glass chrome. On mobile
+ * WebKit the cover uses an in-flow bleed stage + scroll pin so the clay texture
+ * composites behind the bars (Kelvin Man / Pavel Ionov recipe, Oct–May 2026).
+ * Unmodified reference files: studio/motion-reference/. License: /licenses/codrops-image-stack.txt
  */
 import gsap from 'gsap';
 
@@ -42,23 +45,17 @@ export class ImageStackEntrance {
     const sliceAngle = 2 * Math.PI / count;
     const root = document.documentElement;
     root.classList.remove('intro-revealing');
-    // Layout must be live before reading card size — display:none reports 0.
+    // Layout must be live before reading card size — display:none reports 0 and
+    // collapses radius2 into the centre pile from the owner's screenshot.
     gsap.set(this.element, {display:'block', visibility:'hidden', opacity:0});
     this.armSafariBleed();
     void this.element.offsetHeight;
     const cardW = card.clientWidth || (desktop ? 128 : 96);
     const cardH = card.clientHeight || (desktop ? 192 : 144);
+    // Same geometry as Codrops index.js; outer budget scaled for 96×144 / 128×192.
     const radius1 = 50 + cardH / 2;
-    // Keep the ring inside short phone/tablet viewports; desktop can breathe wider.
-    const outer = desktop
-      ? Math.min(300, innerHeight * .36, innerWidth * .28)
-      : Math.min(210, innerWidth * .48, innerHeight * .3);
-    const radius2 = Math.max(outer - radius1, Math.round(cardW * 1.05));
-    // Same ~1s living beat on phone, tablet and desktop — then open the site.
-    const breathTurn = 18;
-    const breathMs = 1;
-    const exitScale = 1.03;
-    const titleBlur = desktop ? 60 : 28;
+    const outer = desktop ? 300 : 230;
+    const radius2 = Math.max(outer - radius1, Math.round(cardW * 1.1));
     gsap.set(this.element, {visibility:'visible', opacity:1});
     gsap.set(group, {clearProps:'all'});
     gsap.set(headings, {clearProps:'all'});
@@ -67,10 +64,10 @@ export class ImageStackEntrance {
     const done = new Promise<void>(resolve => {this.settle = resolve;});
     this.escape = event => {if(event.key === 'Escape') this.hide();};
     addEventListener('keydown', this.escape);
-    this.deadline = window.setTimeout(() => this.hide(), 12000);
+    this.deadline = window.setTimeout(() => this.hide(), 6000);
     this.element.dataset.phase = 'assembling';
 
-    // Codrops finite stages, then the same short living breath on every viewport.
+    // Original finite stages and timing; larger radius keeps the centre hole open.
     this.timeline = gsap.timeline({onComplete:() => this.complete()})
       .from(this.cards, {
         y:innerHeight / 2 + cardH * 1.5,
@@ -91,21 +88,14 @@ export class ImageStackEntrance {
         rotation:index => (index + 1) * 360 / count,
         duration:.5,
       })
-      .to(this.cards, {rotateY:180, opacity:.92, duration:1}, '<')
-      .fromTo(headings,
-        {opacity:0, filter:`blur(${titleBlur}px)`},
-        {opacity:1, filter:'blur(0px)', duration:1}, '<')
-      .call(() => {this.element.dataset.phase = 'breathing';})
-      .to(group, {rotation:breathTurn, duration:breathMs, ease:'none'})
-      .to(this.cards[Math.floor(count * .25)], {rotateY:'+=180', duration:.55, ease:'power1.inOut'}, '<0.15')
-      .to(headings, {opacity:.92, duration:.55, ease:'power1.inOut'}, '<')
+      .to(this.cards, {rotateY:180, opacity:.8, duration:1}, '<')
+      .from(headings, {opacity:0, filter:'blur(60px)', duration:1}, '<')
       .call(() => {
         this.element.dataset.phase = 'revealing';
+        // Snap root off terracotta before the fade so Safari chrome does not linger.
         root.classList.add('intro-revealing');
       })
-      .to(group, {scale:exitScale, duration:.55, ease:'power2.inOut'}, '<')
-      .to(headings, {opacity:0, filter:`blur(${desktop ? 14 : 8}px)`, duration:.45, ease:'power2.in'}, '<')
-      .to(this.element, {opacity:0, duration:.55, ease:'power2.inOut'}, '<'); // same exit timing everywhere
+      .to(this.element, {opacity:0, duration:.45, ease:'power2.inOut'});
     return done;
   }
 

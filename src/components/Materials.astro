@@ -1,8 +1,8 @@
 ---
 import { Image } from 'astro:assets';
-import aboutStations from '../assets/photos/about-stations.jpg';
-import aboutDetails from '../assets/photos/about-details.jpg';
-import aboutStairs from '../assets/photos/about-stairs.jpg';
+import matLattice from '../assets/photos/mat-lattice.jpg';
+import matVelvet from '../assets/photos/mat-velvet.jpg';
+import matWarm from '../assets/photos/mat-warm.jpg';
 
 interface Props {
   featured?: boolean;
@@ -11,9 +11,9 @@ interface Props {
 const { featured = false } = Astro.props;
 
 const strips = [
-  { src: aboutStations, alt: 'Станции маникюра и резной гирих в NAZ', label: 'Станции', pos: '50% 42%' },
-  { src: aboutDetails, alt: 'Керамика и детали пространства NAZ', label: 'Детали', pos: '50% 45%' },
-  { src: aboutStairs, alt: 'Лестница и свет у окна салона', label: 'Свет', pos: '55% 35%' },
+  { src: matLattice, alt: 'Резной гирих в зале NAZ', label: 'Фактура', pos: '50% 40%' },
+  { src: matVelvet, alt: 'Зелёный бархат и кофе в зале', label: 'Бархат', pos: '50% 55%' },
+  { src: matWarm, alt: 'Тёплый свет у окна салона', label: 'Свет', pos: '40% 50%' },
 ];
 ---
 
@@ -29,9 +29,9 @@ const strips = [
       <Image
         src={strip.src}
         alt={featured ? strip.alt : ''}
-        widths={[640, 960, 1280, 1600]}
+        widths={[480, 800, 1200]}
         sizes={featured ? '(max-width:767px) 100vw, 34vw' : '(max-width: 767px) 90vw, 34vw'}
-        quality={88}
+        quality={72}
         loading="lazy"
         decoding="async"
         style={`object-position: ${strip.pos}`}

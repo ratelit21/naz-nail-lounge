@@ -61,7 +61,7 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
   const boot = window as Window & {nazSafetyTimer?:number};
   if(boot.nazSafetyTimer) clearTimeout(boot.nazSafetyTimer);
   // Intro cards + soft hero assembly need a longer fail-open than assemble-only.
-  const safety = window.setTimeout(finish, fullIntro ? 15000 : 3200);
+  const safety = window.setTimeout(finish, fullIntro ? 11000 : 3200);
   if(fullIntro || assemble) {
     // Keep hero frozen under the stack / route snapshot; class may already be set by Layout.
     if(!fullIntro) root.classList.add('page-entering');
@@ -198,9 +198,14 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
   async function entrance() {
     try {
       if(reduced() || (!fullIntro && !assemble)) return;
-      // Start the image-stack animation without a static loading pause.
-      // Card images are already requested eagerly by the browser.
-      if(!fullIntro && routeTransition) {
+      if(fullIntro) {
+        const hero = body.querySelector<HTMLImageElement>('#hero-image');
+        const photos = [...(cover?.querySelectorAll<HTMLImageElement>('img') ?? [])];
+        await Promise.race([
+          Promise.all([document.fonts.ready,hero?.decode().catch(()=>{}),...photos.map(photo=>photo.decode().catch(()=>{}))]),
+          new Promise(resolve=>setTimeout(resolve,1000)),
+        ]);
+      } else if(routeTransition) {
         // Realtor pattern: short static snapshot dissolve, then real content.
         await routeTransition.finished.catch(()=>{});
       }

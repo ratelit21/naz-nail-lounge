@@ -6,8 +6,6 @@ import '@fontsource/tenor-sans/cyrillic-400.css';
 import poiretLatin from '@fontsource/poiret-one/files/poiret-one-latin-400-normal.woff2?url';
 import poiretCyrillic from '@fontsource/poiret-one/files/poiret-one-cyrillic-400-normal.woff2?url';
 import '../styles/global.css';
-import '../styles/header-scroll.css';
-import '../styles/hero-booking.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Preloader from '../components/Preloader.astro';
@@ -61,15 +59,8 @@ const {
         }
       } catch {}
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        // Card intro once per browser profile; reload skips it. Clearing site data brings it back.
-        let introSeen = false;
-        try { introSeen = localStorage.getItem('naz-intro-seen') === '1'; } catch {}
-        if(root.dataset.page === 'home' && !internal && !introSeen) {
-          root.classList.add('intro-active');
-          try { localStorage.setItem('naz-intro-seen', '1'); } catch {}
-        } else {
-          root.classList.add('page-entering');
-        }
+        if(root.dataset.page === 'home' && !internal) root.classList.add('intro-active');
+        else root.classList.add('page-entering');
       }
       window.nazSafetyTimer = setTimeout(() => {
         root.classList.remove('intro-active', 'intro-revealing', 'intro-safari-bleed', 'page-entering');
@@ -78,7 +69,7 @@ const {
         document.querySelectorAll('[data-page-part], [data-page-visual] img').forEach(el => {
           ['opacity','transform','clip-path'].forEach(property => el.style.removeProperty(property));
         });
-      }, root.classList.contains('intro-active') ? 15000 : 3200);
+      }, root.classList.contains('intro-active') ? 11000 : 3200);
       })();
     </script>
   </head>
@@ -92,7 +83,6 @@ const {
     </div>
     <script>
       import '../scripts/page.ts';
-      import '../scripts/header-scroll.ts';
     </script>
   </body>
 </html>

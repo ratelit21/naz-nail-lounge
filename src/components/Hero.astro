@@ -2,7 +2,6 @@
 import { Image } from 'astro:assets';
 import heroScene from '../assets/photos/campaign-portrait.jpg';
 import { copy } from '../data/site';
-import HeroBooking from './HeroBooking.astro';
 ---
 
 <section class="hero" aria-labelledby="hero-brand">
@@ -13,9 +12,6 @@ import HeroBooking from './HeroBooking.astro';
       <span class="hero-sub">Nail Lounge</span>
     </p>
     <h1 class="hero-headline hero-animate" data-page-part>{copy.heroHeadline}</h1>
-    <div class="hero-booking-slot hero-animate" data-page-part>
-      <HeroBooking />
-    </div>
   </div>
 
   <div class="hero-visual">

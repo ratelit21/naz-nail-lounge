@@ -37,8 +37,8 @@
   --max: 1600px;
   --ease-out: cubic-bezier(.22,1,.36,1);
   --fs-body: 17px;
-  --fs-nav: 15px;
-  --fs-cta: 15px;
+  --fs-nav: 16px;
+  --fs-cta: 17px;
   --fs-label: 14px;
   --fs-caption: 19px;
   --section-y: clamp(64px,7vw,112px);
