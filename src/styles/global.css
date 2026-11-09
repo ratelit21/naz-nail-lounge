@@ -226,6 +226,10 @@ html.intro-active body{background:var(--material-clay) center/cover,var(--intro-
       width: 100%;
       height: 100dvh;
     }
+    html.intro-active.intro-scroll-unavailable .entrance-scene,
+    html.intro-active.intro-scroll-unavailable .entrance-headings {
+      top: 0;
+    }
   }
 }
 .intro-active:not(.intro-revealing) .site-header{position:static}
