@@ -6,13 +6,7 @@
   --creamWarm: #f5ebdc;
   --text: #f3e8d8;
   --textOnLight: #12372d;
-  --intro-center: #d7b192;
-  /* Solid Safari chrome fallback: average of clay texture top/bottom edge bands. */
-  --intro-edge: #b05e32;
   --intro-text: #08251f;
-  /* Mobile WebKit intro bleed — taller than any status/toolbar (Kelvin Man). */
-  --intro-safari-top: 100px;
-  --intro-safari-bottom: 160px;
   /* Absolute under Astro `base` so GitHub Pages and local preview both resolve. */
   --material-clay: url("/naz-nail-lounge/textures/terracotta-plaster.webp");
   --material-stone: url("/naz-nail-lounge/textures/ivory-travertine.webp");
