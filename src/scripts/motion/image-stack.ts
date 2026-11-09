@@ -5,18 +5,10 @@
  * After the ring settles, a short Codrops-style breath (slow group turn + a few
  * card flips) keeps the scene alive before a soft dissolve into the site —
  * instead of cutting like a slide deck. Card sizes 96x144 / 128x192.
- * iOS Safari 26: mobile WebKit uses in-flow bleed + scroll pin for chrome.
+ * All browsers use one fixed overlay; no mobile scroll pin or in-flow mode.
  * Unmodified reference: studio/motion-reference/. License: /licenses/codrops-image-stack.txt
  */
 import gsap from 'gsap';
-
-const SAFARI_TOP = 100;
-const SAFARI_BOTTOM = 160;
-
-function needsSafariBleed() {
-  return matchMedia('(max-width:767px)').matches
-    && CSS.supports('-webkit-touch-callout', 'none');
-}
 
 export class ImageStackEntrance {
   private timeline?: gsap.core.Timeline;
@@ -24,15 +16,11 @@ export class ImageStackEntrance {
   private settle?: () => void;
   private escape?: (event: KeyboardEvent) => void;
   private deadline?: number;
-  private bleed = false;
-  private pinFrame = 0;
-  private onPinResize?: () => void;
-
   constructor(private element: HTMLElement) {
     this.cards = [...element.querySelectorAll<HTMLElement>('[data-stack-card]')];
   }
 
-  play() {
+  play(onReveal?: () => void) {
     this.hide();
     const desktop = matchMedia('(min-width:53em)').matches;
     const group = this.element.querySelector<HTMLElement>('[data-stack-group]')!;
@@ -44,7 +32,6 @@ export class ImageStackEntrance {
     root.classList.remove('intro-revealing');
     // Layout must be live before reading card size — display:none reports 0.
     gsap.set(this.element, {display:'block', visibility:'hidden', opacity:0});
-    this.armSafariBleed();
     void this.element.offsetHeight;
     const cardW = card.clientWidth || (desktop ? 128 : 96);
     const cardH = card.clientHeight || (desktop ? 192 : 144);
@@ -102,41 +89,12 @@ export class ImageStackEntrance {
       .call(() => {
         this.element.dataset.phase = 'revealing';
         root.classList.add('intro-revealing');
+        onReveal?.();
       })
       .to(group, {scale:exitScale, duration:.55, ease:'power2.inOut'}, '<')
       .to(headings, {opacity:0, filter:`blur(${desktop ? 14 : 8}px)`, duration:.45, ease:'power2.in'}, '<')
       .to(this.element, {opacity:0, duration:.55, ease:'power2.inOut'}, '<'); // same exit timing everywhere
     return done;
-  }
-
-  private armSafariBleed() {
-    this.releaseSafariBleed();
-    this.bleed = needsSafariBleed();
-    if(!this.bleed) return;
-    const root = document.documentElement;
-    root.classList.add('intro-safari-bleed');
-    root.style.setProperty('--intro-safari-top', `${SAFARI_TOP}px`);
-    root.style.setProperty('--intro-safari-bottom', `${SAFARI_BOTTOM}px`);
-    const pin = () => {
-      cancelAnimationFrame(this.pinFrame);
-      this.pinFrame = requestAnimationFrame(() => scrollTo(0, SAFARI_TOP));
-    };
-    this.onPinResize = pin;
-    pin();
-    addEventListener('resize', pin);
-  }
-
-  private releaseSafariBleed() {
-    if(this.onPinResize) removeEventListener('resize', this.onPinResize);
-    this.onPinResize = undefined;
-    cancelAnimationFrame(this.pinFrame);
-    this.pinFrame = 0;
-    const root = document.documentElement;
-    root.classList.remove('intro-safari-bleed');
-    root.style.removeProperty('--intro-safari-top');
-    root.style.removeProperty('--intro-safari-bottom');
-    if(this.bleed) scrollTo(0, 0);
-    this.bleed = false;
   }
 
   private complete() {
@@ -151,7 +109,6 @@ export class ImageStackEntrance {
   hide() {
     this.timeline?.kill();
     this.complete();
-    this.releaseSafariBleed();
     this.element.dataset.phase = 'complete';
     // display:none — opacity/visibility alone can still tint Safari 26 chrome.
     gsap.set(this.element, {display:'none', visibility:'hidden', pointerEvents:'none', opacity:0});

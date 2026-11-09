@@ -167,7 +167,8 @@ a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;border:0;
 .page-entering [data-page-visual] img{transform:scale(1.04);transform-origin:50% 50%;will-change:transform}
 .page-entering [data-page-part]{opacity:0;clip-path:inset(0 100% 0 0);-webkit-clip-path:inset(0 100% 0 0);will-change:clip-path,opacity}
 /* Keep below-hero sections invisible while the hero assembles (mobile especially). */
-.page-entering [data-reveal]{opacity:0;visibility:hidden;pointer-events:none}
+html.page-entering [data-reveal]{opacity:0;visibility:hidden;pointer-events:none}
+html.reveal-armed [data-reveal]{transition:opacity .52s ease}
 /* Scroll sections: hide pending items until their one-shot reveal runs. */
 html.reveal-armed [data-reveal]:not([data-revealed]) [data-reveal-item],
 html.reveal-armed [data-reveal]:not([data-revealed]) [data-svc-item],
@@ -188,59 +189,21 @@ html.reveal-armed [data-reveal]:not([data-revealed]) [data-team-copy]{
   }
   .page-entering [data-reveal]{opacity:1;visibility:visible;pointer-events:auto}
 }
-.image-stack-entrance{position:fixed;inset:0;z-index:100;display:none;visibility:hidden;pointer-events:none;overflow:hidden;isolation:isolate;background:transparent;color:var(--intro-text)}
+.image-stack-entrance{position:fixed;inset:0;width:100%;height:100vh;height:100dvh;z-index:100;display:none;visibility:hidden;pointer-events:none;overflow:hidden;isolation:isolate;background:transparent;color:var(--intro-text)}
 /* Match the realtor's transparent fixed shell + absolutely painted image.
    WebKit color-extension heuristics can keep a sticky header's sampled color
    when a viewport-sized fixed popup appears: WebKit/WebKit PR #49187. */
-.entrance-backdrop{position:absolute;inset:0;z-index:0;background:var(--material-clay) center/cover,var(--intro-edge)}
+.entrance-backdrop{position:absolute;inset:0;z-index:0;background:var(--material-clay) center/cover,var(--intro-preview) center/cover}
 .image-stack-entrance::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:var(--intro-grain) repeat;background-size:150px 150px;opacity:.04;mix-blend-mode:multiply}
 .intro-active .image-stack-entrance{display:block;visibility:visible}
-/* Fallback solid for Safari chrome; texture lives on .entrance-backdrop. */
-html.intro-active{overflow:hidden;background:var(--intro-edge)}
-html.intro-active body{background:var(--intro-edge)}
-/* Reveal snaps root to cream so terracotta chrome does not linger into hero assembly. */
-html.intro-active.intro-revealing{background:var(--cream)}
-html.intro-active.intro-revealing body{background:transparent}
+/* Use the same real texture everywhere, with an inlined photo placeholder
+   under the full-res layer. Do not expose an orange solid first frame. */
+html.intro-active{overflow:hidden;background:var(--material-clay) center/cover,var(--intro-preview) center/cover}
+html.intro-active body{background:var(--material-clay) center/cover,var(--intro-preview) center/cover}
+/* Keep the clay texture through the dissolve; remove it only when the overlay is gone. */
 .intro-active:not(.intro-revealing) .site-header{position:static}
 .intro-active [data-site-content]{visibility:hidden}
 .intro-active.intro-revealing [data-site-content]{visibility:visible}
-/* iOS Safari 26: fixed layers never go under Liquid Glass. In-flow bleed + scroll
-   pin lets real clay pixels composite behind the bars (kelvinman.com/notes/under-the-glass). */
-@supports (-webkit-touch-callout:none){
-  @media (max-width:767px){
-    html.intro-active.intro-safari-bleed{
-      overflow:hidden;
-      background:var(--intro-edge);
-    }
-    html.intro-active.intro-safari-bleed body{
-      overflow:hidden;
-      background:var(--intro-edge);
-      min-height:calc(var(--intro-safari-top) + 100dvh + var(--intro-safari-bottom));
-    }
-    html.intro-active.intro-safari-bleed .image-stack-entrance{
-      position:relative;
-      inset:auto;
-      left:0;
-      width:100%;
-      height:calc(var(--intro-safari-top) + 100dvh + var(--intro-safari-bottom));
-      display:block;
-      visibility:visible;
-    }
-    html.intro-active.intro-safari-bleed .entrance-scene,
-    html.intro-active.intro-safari-bleed .entrance-headings{
-      top:var(--intro-safari-top);
-      left:0;
-      right:0;
-      bottom:auto;
-      height:100dvh;
-      width:100%;
-    }
-    /* Keep page out of flow while the bleed stage owns the document height. */
-    html.intro-active.intro-safari-bleed [data-site-content]{display:none!important;visibility:hidden}
-    html.intro-active.intro-safari-bleed.intro-revealing{background:var(--cream)}
-    html.intro-active.intro-safari-bleed.intro-revealing body{background:transparent}
-  }
-}
 .entrance-scene{position:absolute;inset:0;z-index:2;perspective:1000px;overflow:hidden}
 .entrance-group{position:absolute;left:50%;top:50%;width:0;height:0}
 .entrance-card{position:absolute;left:50%;top:50%;width:96px;height:144px;opacity:0;transform:translate(-50%,-50%);border-radius:5px;box-shadow:0 10px 24px #08251f24}

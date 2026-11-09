@@ -130,7 +130,7 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
     root.dataset.pageEntry = 'complete';
     // Arm scroll reveals while page-entering still hides [data-reveal], then lift the veil.
     revealSections();
-    root.classList.remove('intro-active','intro-revealing','intro-safari-bleed','page-entering');
+    root.classList.remove('intro-active','intro-revealing','page-entering');
   }
 
   function setupMenu() {
@@ -207,15 +207,22 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
       if(disposed || settled) return;
       // Home first visit: card intro → then soft hero assembly (not a hard cut).
       if(fullIntro) {
-        await stack!.play();
-        // Drop terracotta root + fixed/bleed cover before hero assembly so Safari
-        // chrome does not keep the intro tint through the whole page-entry beat.
+        // Open the real page WHILE the card cover fades, not a frame later.
+        // page-entering was armed in <head>, so the lower terracotta sections
+        // cannot flash through the dissolving intro.
+        let assembly: Promise<void> | undefined;
+        await stack!.play(() => {
+          if(!disposed && !settled) assembly = entry.play();
+        });
+        if(disposed || settled) return;
         stack!.hide();
         root.classList.remove('intro-active','intro-revealing','intro-safari-bleed');
-        if(!root.classList.contains('page-entering')) root.classList.add('page-entering');
+        // Escape / safety completion can skip the reveal callback.
+        if(assembly) await assembly;
+        else await entry.play();
+      } else if(assemble) {
+        await entry.play();
       }
-      if(disposed || settled) return;
-      if(fullIntro || assemble) await entry.play();
     } finally {finish();}
   }
   void entrance().catch(()=>{});
@@ -282,7 +289,7 @@ document.addEventListener('astro:before-swap',event=>{
   void route.viewTransition.ready.catch(()=>{});
   if(reduced()) route.viewTransition.skipTransition();
   const next = route.newDocument.documentElement;
-  next.classList.remove('intro-active','intro-revealing','intro-safari-bleed','page-entering','reveal-armed','is-menu-open');
+  next.classList.remove('intro-active','intro-revealing','page-entering','reveal-armed','is-menu-open');
   // Back/Forward restores the saved page position without replaying its hero.
   const assemble = !reduced() && route.navigationType !== 'traverse' && !route.to.hash;
   if(assemble) next.classList.add('page-entering');

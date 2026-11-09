@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 permissions:
   contents: write
@@ -22,16 +25,18 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
-      - name: Check header and button in Chromium
+      - name: Check responsive layout and intro transition in Chromium, Firefox, WebKit
         run: |
           npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium firefox webkit
           mkdir -p .qa-server
           ln -s "$PWD/dist" .qa-server/naz-nail-lounge
           python3 -m http.server 4321 --directory .qa-server > /tmp/naz-qa.log 2>&1 &
           for i in {1..30}; do curl -fsS http://127.0.0.1:4321/naz-nail-lounge/ >/dev/null && break; sleep 1; done
           node tests/header-scroll.mjs
+          node tests/intro-transition.mjs
       - name: Publish to GitHub Pages
+        if: github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
