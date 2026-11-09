@@ -5,6 +5,7 @@ import Materials from '../components/Materials.astro';
 import botanical from '../assets/photos/campaign-botanical.jpg';
 import salon from '../assets/photos/about-lounge.jpg';
 import { copy } from '../data/site';
+import HeroBooking from '../components/HeroBooking.astro';
 ---
 
 <Layout theme="cream" nav="atmosphere" title="Атмосфера — Naz Nail Lounge" description="Свет, зелёный бархат, материалы и детали пространства Naz Nail Lounge.">
@@ -18,6 +19,9 @@ import { copy } from '../data/site';
           <p class="cream-eyebrow" data-page-part>{copy.atmosphereEyebrow}</p>
           <h1 class="cream-hero-title" id="cream-brand" data-page-part>Атмосфера</h1>
           <p class="cream-hero-tagline" data-page-part>{copy.atmosphereTagline}</p>
+          <div class="hero-booking-slot cream-hero-booking-slot" data-page-part>
+            <HeroBooking />
+          </div>
         </div>
       </div>
     </section>

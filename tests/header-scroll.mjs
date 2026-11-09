@@ -21,6 +21,28 @@ try {
       assert.equal(initial.header,'rgba(0, 0, 0, 0)',width+' '+suffix+' initial header');
       assert.equal(initial.button,'rgba(0, 0, 0, 0)',width+' '+suffix+' initial button');
       assert.ok(parseFloat(initial.border)>=1,width+' '+suffix+' outlined button');
+      // Both hero sections expose the same obvious, accessible booking action.
+      const heroBooking=page.locator(suffix ? '.cream-hero-booking-slot .hero-booking' : '.hero-booking-slot .hero-booking');
+      assert.equal(await heroBooking.count(),1,width+' '+suffix+' missing hero booking CTA');
+      assert.equal(await heroBooking.getAttribute('href'),'https://n1824990.yclients.com/',
+        width+' '+suffix+' booking URL incorrect');
+      assert.equal((await heroBooking.locator('.hero-booking-label').innerText()).trim(),'Записаться',
+        width+' '+suffix+' CTA label incorrect');
+      const buttonGeometry=await heroBooking.evaluate(el=>{
+        const box=el.getBoundingClientRect();
+        const font=getComputedStyle(el).fontFamily;
+        const parent=document.querySelector(el.closest('.cream-hero')?'.cream-hero-tagline':'.hero-headline').getBoundingClientRect();
+        return {w:box.width,h:box.height,top:box.top,parentBottom:parent.bottom,font,
+          bg:getComputedStyle(el).backgroundColor,text:getComputedStyle(el).color};
+      });
+      assert.ok(buttonGeometry.w>=200 && buttonGeometry.h>=54,
+        width+' '+suffix+' hero CTA too small: '+JSON.stringify(buttonGeometry));
+      assert.ok(buttonGeometry.top>=buttonGeometry.parentBottom,
+        width+' '+suffix+' hero CTA overlaps headline: '+JSON.stringify(buttonGeometry));
+      assert.ok(buttonGeometry.font.includes('Tenor Sans'),
+        width+' '+suffix+' hero CTA typography mismatch: '+buttonGeometry.font);
+      assert.equal(buttonGeometry.bg,'rgb(8, 37, 31)',width+' '+suffix+' wrong CTA fill');
+      assert.equal(buttonGeometry.text,'rgb(245, 235, 220)',width+' '+suffix+' wrong CTA text color');
       // A hover must NOT add green (or any other fill) over a transparent header.
       await page.locator('.site-header .header-cta').hover();
       const transparentHover=await page.locator('.site-header .header-cta').evaluate(el=>({
