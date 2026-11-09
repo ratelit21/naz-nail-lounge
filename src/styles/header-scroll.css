@@ -36,21 +36,21 @@ html.header-route-sync .site-header .nav-link::after {
   background: transparent;
   color: inherit;
   border: 1px solid currentColor;
-  border-radius: 999px;
+  border-radius: 2px;
   opacity: 1;
   transition: background-color .38s ease, color .38s ease, border-color .3s ease, box-shadow .3s ease;
 }
 .site-header.header-cream.is-scrolled .header-cta,
 html.is-menu-open .site-header.header-cream .header-cta {
-  background: var(--cream);
-  color: var(--textOnLight);
-  border-color: var(--canvas);
+  background: transparent;
+  color: inherit;
+  border-color: currentColor;
 }
 .site-header:not(.header-cream).is-scrolled .header-cta,
 html.is-menu-open .site-header:not(.header-cream) .header-cta {
-  background: var(--creamWarm);
-  color: var(--canvas);
-  border-color: var(--creamWarm);
+  background: transparent;
+  color: inherit;
+  border-color: currentColor;
 }
 /* No text fading, no fill swapping: only the NAZ gold hairline glows.
    This covers both the transparent and filled header on both pages. */
