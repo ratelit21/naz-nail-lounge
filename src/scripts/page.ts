@@ -198,13 +198,13 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
   async function entrance() {
     try {
       if(reduced() || (!fullIntro && !assemble)) return;
+      let contentReady: Promise<unknown> = Promise.resolve();
       if(fullIntro) {
         const hero = body.querySelector<HTMLImageElement>('#hero-image');
         const photos = [...(cover?.querySelectorAll<HTMLImageElement>('img') ?? [])];
-        await Promise.race([
-          Promise.all([document.fonts.ready,hero?.decode().catch(()=>{}),...photos.map(photo=>photo.decode().catch(()=>{}))]),
-          new Promise(resolve=>setTimeout(resolve,1000)),
-        ]);
+        contentReady = Promise.all([document.fonts.ready, hero?.decode().catch(()=>{})]);
+        // Decode the actual intro frames; the site's assets load during the card motion.
+        await Promise.all(photos.map(photo=>photo.decode().catch(()=>{})));
       } else if(routeTransition) {
         // Realtor pattern: short static snapshot dissolve, then real content.
         await routeTransition.finished.catch(()=>{});
@@ -212,7 +212,7 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
       if(disposed || settled) return;
       // Home first visit: card intro → then soft hero assembly (not a hard cut).
       if(fullIntro) {
-        await stack!.play();
+        await stack!.play(contentReady);
         // Drop terracotta root + fixed/bleed cover before hero assembly so Safari
         // chrome does not keep the intro tint through the whole page-entry beat.
         stack!.hide();

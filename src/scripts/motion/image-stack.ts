@@ -13,6 +13,7 @@
  */
 import gsap from 'gsap';
 
+const HOLD_DURATION = 1.5;
 const SAFARI_TOP = 100;
 const SAFARI_BOTTOM = 160;
 
@@ -35,7 +36,7 @@ export class ImageStackEntrance {
     this.cards = [...element.querySelectorAll<HTMLElement>('[data-stack-card]')];
   }
 
-  play() {
+  play(contentReady: Promise<unknown> = Promise.resolve()) {
     this.hide();
     const desktop = matchMedia('(min-width:53em)').matches;
     const group = this.element.querySelector<HTMLElement>('[data-stack-group]')!;
@@ -64,7 +65,7 @@ export class ImageStackEntrance {
     const done = new Promise<void>(resolve => {this.settle = resolve;});
     this.escape = event => {if(event.key === 'Escape') this.hide();};
     addEventListener('keydown', this.escape);
-    this.deadline = window.setTimeout(() => this.hide(), 6000);
+    this.deadline = window.setTimeout(() => this.hide(), 6000 + HOLD_DURATION * 1000);
     this.element.dataset.phase = 'assembling';
 
     // Original finite stages and timing; larger radius keeps the centre hole open.
@@ -82,6 +83,13 @@ export class ImageStackEntrance {
         rotateY:15, duration:1, ease:'power1.out',
       }, '<')
       .call(() => {this.element.dataset.phase = 'composing';})
+      // Cards start while fonts/hero load; finish composing only with stable content.
+      .addPause('>', () => {
+        const timeline = this.timeline;
+        void contentReady.then(() => {
+          if(this.timeline === timeline && this.element.dataset.phase === 'composing') timeline?.resume();
+        }, () => this.hide());
+      })
       .to(this.cards, {
         x:index => Math.round(radius2 * Math.cos(sliceAngle * index - Math.PI / 4)),
         y:index => Math.round(radius2 * Math.sin(sliceAngle * index - Math.PI / 4)) - radius1,
@@ -89,13 +97,18 @@ export class ImageStackEntrance {
         duration:.5,
       })
       .to(this.cards, {rotateY:180, opacity:.8, duration:1}, '<')
-      .from(headings, {opacity:0, filter:'blur(60px)', duration:1}, '<')
+      .fromTo(headings, {opacity:0, filter:'blur(60px)'}, {opacity:1, filter:'blur(0px)', duration:1}, '<')
+      .call(() => {this.element.dataset.phase = 'holding';})
+      .addLabel('intro-idle')
+      // Finite Codrops idle: the group keeps turning while separate cards flip.
+      .to(group, {rotation:360 * (HOLD_DURATION + .45) / 20, duration:HOLD_DURATION + .45, ease:'none'}, 'intro-idle')
+      .to([this.cards[1], this.cards[5]], {rotateY:'+=180', duration:.6, stagger:.45, ease:'power1.inOut'}, 'intro-idle')
       .call(() => {
         this.element.dataset.phase = 'revealing';
         // Snap root off terracotta before the fade so Safari chrome does not linger.
         root.classList.add('intro-revealing');
-      })
-      .to(this.element, {opacity:0, duration:.45, ease:'power2.inOut'});
+      }, undefined, 'intro-idle+=' + HOLD_DURATION)
+      .to(this.element, {opacity:0, duration:.45, ease:'power2.inOut'}, 'intro-idle+=' + HOLD_DURATION);
     return done;
   }
 

@@ -5,6 +5,7 @@ import '@fontsource/tenor-sans/latin-400.css';
 import '@fontsource/tenor-sans/cyrillic-400.css';
 import poiretLatin from '@fontsource/poiret-one/files/poiret-one-latin-400-normal.woff2?url';
 import poiretCyrillic from '@fontsource/poiret-one/files/poiret-one-cyrillic-400-normal.woff2?url';
+import tenorLatin from '@fontsource/tenor-sans/files/tenor-sans-latin-400-normal.woff2?url';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -37,6 +38,11 @@ const {
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <link rel="preload" href={poiretLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={poiretCyrillic} as="font" type="font/woff2" crossorigin />
+    {nav === 'home' && <>
+      <link rel="preload" href={tenorLatin} as="font" type="font/woff2" crossorigin />
+      <link rel="preload" href={withBase('/textures/terracotta-plaster-mobile.webp')} as="image" media="(prefers-reduced-motion: no-preference) and (max-width: 767px)" />
+      <link rel="preload" href={withBase('/textures/terracotta-plaster.webp')} as="image" media="(prefers-reduced-motion: no-preference) and (min-width: 768px)" />
+    </>}
     <title>{title}</title>
     <ClientRouter fallback="swap" />
     <script is:inline>
