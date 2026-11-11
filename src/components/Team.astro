@@ -6,6 +6,7 @@ import team03 from '../assets/photos/team-03.jpg';
 import team04 from '../assets/photos/team-04.jpg';
 import team05 from '../assets/photos/team-05.jpg';
 import { copy, teamSlots } from '../data/site';
+import { photoPreview } from '../lib/photo-preview';
 
 const portraits = [team01, team02, team03, team04, team05];
 ---
@@ -31,9 +32,10 @@ const portraits = [team01, team02, team03, team04, team05];
               widths={[320, 480, 720]}
               sizes="(max-width:767px) 42vw, 18vw"
               quality={76}
-              loading="eager"
+              loading="lazy"
               fetchpriority="low"
               decoding="async"
+              style={photoPreview(portraits[index],'50% 18%')}
             />
           </figure>
           <p class="team-person-name">{slot.name}</p>

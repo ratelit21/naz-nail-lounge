@@ -2,6 +2,9 @@ import gsap from 'gsap';
 import { ImageStackEntrance } from './motion/image-stack';
 import { PageEntry } from './motion/page-entry';
 import { TeamEntrance } from './motion/team-entry';
+import { ScrollAssembly } from './motion/scroll-assembly';
+import { preparePhotos } from './motion/photo-loading';
+import { prepareServiceCarousel } from './services-carousel';
 import { isSectionHash, prepareContactNavigation, settleContactNavigation } from './motion/contact-navigation';
 
 type RouteSwap = Event & {
@@ -27,6 +30,7 @@ type PageSession = {
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 let current: PageSession | undefined;
 let incomingTransition: ViewTransition | undefined;
+let restoringPosition = false;
 
 /** Same contract as the neighbouring realtor's section-navigation.ts:
  * prepare route first → commit DOM and scroll → release snapshot → reveal content.
@@ -38,26 +42,33 @@ function mountPage() {
   current?.dispose();
   const transition = incomingTransition;
   incomingTransition = undefined;
-  current = createPageSession(transition);
+  current = createPageSession(transition,restoringPosition);
+  restoringPosition = false;
 }
 
-function createPageSession(routeTransition?: ViewTransition): PageSession {
+function createPageSession(routeTransition?: ViewTransition, restoreVisible = false): PageSession {
   const body = document.body;
   const root = document.documentElement;
-  const arrivingAtSection = !!root.dataset.contactNavigation;
   const controller = new AbortController();
   const {signal} = controller;
   const cover = body.querySelector<HTMLElement>('[data-image-stack]');
   const stack = cover ? new ImageStackEntrance(cover) : null;
-  const entry = new PageEntry(body);
+  const entry = new PageEntry(body,!!routeTransition);
   const team = new TeamEntrance(body);
+  const assembly = new ScrollAssembly(body);
+  const disposeCarousel = prepareServiceCarousel(body);
+  const disposePhotos = preparePhotos(body);
   const fullIntro = root.classList.contains('intro-active') && !!stack;
   const assemble = root.classList.contains('page-entering') || fullIntro;
   let disposed = false;
   let settled = false;
-  let observer: IntersectionObserver | undefined;
+  let routeReleased = !routeTransition;
+  const releaseRoute = () => {
+    routeReleased = true;
+    if(settled && !disposed) delete root.dataset.routeTransition;
+  };
+  void routeTransition?.finished.then(releaseRoute,releaseRoute);
   let menuTween: gsap.core.Tween | undefined;
-  const sectionTweens: gsap.core.Animation[] = [];
   const boot = window as Window & {nazSafetyTimer?:number};
   if(boot.nazSafetyTimer) clearTimeout(boot.nazSafetyTimer);
   // Intro cards + soft hero assembly need a longer fail-open than assemble-only.
@@ -69,56 +80,10 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
   }
   let closeMenu = (_restore = true) => {};
 
-  function revealItems(section: HTMLElement) {
-    return [...section.querySelectorAll<HTMLElement>(section.hasAttribute('data-team')
-      ? '[data-team-copy]'
-      : '[data-reveal-item], [data-svc-item]')];
-  }
-
-  /** One-shot section appear on scroll: soft rise + fade, then static. Not the hero assembly. */
   function revealSections() {
-    if(disposed || reduced() || observer) return;
-    // Prepare the cast before capture, then start its motion after the route fade.
-    team.start(arrivingAtSection ? routeTransition?.finished : undefined);
-    const sections = [...body.querySelectorAll<HTMLElement>('[data-reveal]')];
-    if(!sections.length) return;
-    root.classList.add('reveal-armed');
-    observer = new IntersectionObserver(entries => {
-      for(const item of entries) {
-        if(!item.isIntersecting) continue;
-        observer?.unobserve(item.target);
-        const section = item.target as HTMLElement;
-        const children = revealItems(section);
-        section.dataset.revealed = '1';
-        if(!children.length) continue;
-        sectionTweens.push(gsap.fromTo(children,
-          {opacity:0,y:28},
-          {
-            opacity:1,
-            y:0,
-            duration:.82,
-            stagger:.09,
-            ease:'power2.out',
-            clearProps:'opacity,transform',
-          }));
-      }
-    },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
-
-    for(const section of sections) {
-      const children = revealItems(section);
-      if(!children.length) {
-        section.dataset.revealed = '1';
-        continue;
-      }
-      // History restore / deep scroll: keep already-passed content visible.
-      const bounds = section.getBoundingClientRect();
-      if(bounds.bottom <= 0 || (arrivingAtSection && bounds.top < innerHeight)) {
-        section.dataset.revealed = '1';
-        continue;
-      }
-      gsap.set(children,{opacity:0,y:28});
-      observer.observe(section);
-    }
+    if(disposed || reduced()) return;
+    team.start(routeTransition?.finished,restoreVisible);
+    assembly.start(routeTransition?.finished,restoreVisible);
   }
 
   function finish() {
@@ -128,13 +93,15 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
     stack?.hide();
     entry.reset();
     root.dataset.pageEntry = 'complete';
-    // Arm scroll reveals while page-entering still hides [data-reveal], then lift the veil.
+    // Each section keeps its surface; only inner content is prepared for scroll.
     revealSections();
     root.classList.remove('intro-active','intro-revealing','intro-safari-bleed','page-entering');
+    if(routeReleased) delete root.dataset.routeTransition;
   }
 
   function setupMenu() {
     const panel = body.querySelector<HTMLElement>('[data-nav-panel]');
+    const backdrop = body.querySelector<HTMLElement>('[data-nav-backdrop]');
     const open = body.querySelector<HTMLButtonElement>('[data-menu-open]');
     const close = body.querySelector<HTMLButtonElement>('[data-menu-close]');
     if(!panel || !open || !close) return;
@@ -145,18 +112,23 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
       root.classList.toggle('is-menu-open',value);
       panel.hidden = !value;
       panel.classList.toggle('is-open',value);
+      if(backdrop) {
+        backdrop.hidden = !value;
+        backdrop.classList.toggle('is-open',value);
+      }
       open.hidden = value;
       close.hidden = !value;
       open.setAttribute('aria-expanded',String(value));
       if(value) {
-        close.focus();
+        close.focus({preventScroll:true});
         if(!reduced()) menuTween = gsap.fromTo(links,{y:12,opacity:0},
           {y:0,opacity:1,duration:.3,stagger:.03,clearProps:'opacity,transform',ease:'power2.out'});
-      } else if(restore) open.focus();
+      } else if(restore) open.focus({preventScroll:true});
     };
     closeMenu = (restore = true) => setOpen(false,restore);
     open.addEventListener('click',()=>setOpen(true),{signal});
     close.addEventListener('click',()=>setOpen(false),{signal});
+    backdrop?.addEventListener('click',()=>setOpen(false),{signal});
     links.forEach(link=>link.addEventListener('click',()=>setOpen(false,false),{signal}));
     document.addEventListener('keydown',event=>{
       if(panel.hidden) return;
@@ -193,7 +165,10 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
   const interrupt = () => {if(root.dataset.pageEntry === 'assembling') finish();};
   window.addEventListener('pointerdown',interrupt,{signal,passive:true});
   window.addEventListener('wheel',interrupt,{signal,passive:true});
-  matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',()=>finish(),{signal});
+  matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',()=>{
+    finish();
+    if(reduced()) assembly.finish();
+  },{signal});
 
   async function entrance() {
     try {
@@ -204,9 +179,13 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
         const photos = [...(cover?.querySelectorAll<HTMLImageElement>('img') ?? [])];
         contentReady = Promise.all([document.fonts.ready, hero?.decode().catch(()=>{})]);
         // Decode the actual intro frames; the site's assets load during the card motion.
-        await Promise.all(photos.map(photo=>photo.decode().catch(()=>{})));
+        photos.forEach(photo=>{photo.loading = 'eager';});
+        await Promise.race([
+          Promise.all(photos.map(photo=>photo.decode().catch(()=>{}))),
+          new Promise(resolve=>setTimeout(resolve,900)),
+        ]);
       } else if(routeTransition) {
-        // Realtor pattern: short static snapshot dissolve, then real content.
+        // Release the route snapshot before starting the destination assembly.
         await routeTransition.finished.catch(()=>{});
       }
       if(disposed || settled) return;
@@ -220,9 +199,17 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
         if(!root.classList.contains('page-entering')) root.classList.add('page-entering');
       }
       if(disposed || settled) return;
+      revealSections();
+      // A short decode budget; the inline photo preview covers a slow network.
+      if(!fullIntro && !routeTransition) await Promise.race([
+        body.querySelector<HTMLImageElement>('#hero-image')?.decode().catch(()=>{}),
+        new Promise(resolve=>setTimeout(resolve,500)),
+      ]);
+      if(disposed || settled) return;
       if(fullIntro || assemble) await entry.play();
     } finally {finish();}
   }
+  if(!fullIntro) revealSections();
   void entrance().catch(()=>{});
 
   return {
@@ -233,14 +220,11 @@ function createPageSession(routeTransition?: ViewTransition): PageSession {
       finish();
       disposed = true;
       controller.abort();
-      observer?.disconnect();
-      root.classList.remove('reveal-armed');
-      body.querySelectorAll<HTMLElement>('[data-reveal][data-revealed]').forEach(section => {
-        delete section.dataset.revealed;
-      });
+      assembly.dispose();
+      disposeCarousel();
+      disposePhotos();
       team.dispose();
       menuTween?.kill();
-      sectionTweens.forEach(tween=>tween.kill());
     },
   };
 }
@@ -284,10 +268,14 @@ document.addEventListener('astro:before-swap',event=>{
   current?.dispose();
   current = undefined;
   incomingTransition = route.viewTransition;
+  restoringPosition = route.navigationType === 'traverse';
   void route.viewTransition.ready.catch(()=>{});
   if(reduced()) route.viewTransition.skipTransition();
   const next = route.newDocument.documentElement;
   next.classList.remove('intro-active','intro-revealing','intro-safari-bleed','page-entering','reveal-armed','is-menu-open');
+  if(!reduced()) {
+    next.dataset.routeTransition = 'running';
+  } else delete next.dataset.routeTransition;
   // Back/Forward restores the saved page position without replaying its hero.
   const assemble = !reduced() && route.navigationType !== 'traverse' && !route.to.hash;
   if(assemble) next.classList.add('page-entering');

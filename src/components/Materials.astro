@@ -3,6 +3,10 @@ import { Image } from 'astro:assets';
 import matLattice from '../assets/photos/mat-lattice.jpg';
 import matVelvet from '../assets/photos/mat-velvet.jpg';
 import matWarm from '../assets/photos/mat-warm.jpg';
+import textureRoom from '../assets/photos/atmosphere/texture-room.jpg';
+import velvetLounge from '../assets/photos/atmosphere/velvet-lounge.jpg';
+import windowLight from '../assets/photos/atmosphere/window-light.jpg';
+import { photoPreview } from '../lib/photo-preview';
 
 interface Props {
   featured?: boolean;
@@ -15,6 +19,13 @@ const strips = [
   { src: matVelvet, alt: 'Зелёный бархат и кофе в зале', label: 'Бархат', pos: '50% 55%' },
   { src: matWarm, alt: 'Тёплый свет у окна салона', label: 'Свет', pos: '40% 50%' },
 ];
+// Full portrait originals for the tall atmosphere frames; retain the compact
+// decorative strip elsewhere without changing its imagery or the intro assets.
+const featuredStrips = [
+  { src: textureRoom, alt: 'Маникюрный зал NAZ с резным гирихом и зелёными креслами', label: 'Фактура', pos: '50% 50%' },
+  { src: velvetLounge, alt: 'Зелёное бархатное кресло и кофе в салоне NAZ', label: 'Бархат', pos: '50% 65%' },
+  { src: windowLight, alt: 'Большое окно и подвесные светильники в салоне NAZ', label: 'Свет', pos: '50% 50%' },
+];
 ---
 
 <section
@@ -24,17 +35,17 @@ const strips = [
   aria-hidden={featured ? undefined : 'true'}
   data-reveal={featured ? true : undefined}
 >
-  {strips.map((strip) => (
+  {(featured ? featuredStrips : strips).map((strip) => (
     <figure class="materials-item" data-reveal-item={featured ? true : undefined}>
       <Image
         src={strip.src}
         alt={featured ? strip.alt : ''}
-        widths={[480, 800, 1200]}
-        sizes={featured ? '(max-width:767px) 100vw, 34vw' : '(max-width: 767px) 90vw, 34vw'}
-        quality={72}
+        widths={(featured ? [480, 800, 1200, 1440] : [480, 800, 1200]).filter(width => width <= strip.src.width)}
+        sizes={featured ? '(max-width:767px) calc(100vw - 48px), 30vw' : '(max-width: 767px) 90vw, 34vw'}
+        quality={featured ? 85 : 72}
         loading="lazy"
         decoding="async"
-        style={`object-position: ${strip.pos}`}
+        style={`${photoPreview(strip.src,strip.pos)}object-position: ${strip.pos}`}
       />
       {featured && <figcaption class="materials-caption">{strip.label}</figcaption>}
     </figure>

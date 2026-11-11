@@ -3,12 +3,26 @@ import { Image } from 'astro:assets';
 import svcManicure from '../assets/photos/svc-manicure-fill.jpg';
 import svcColor from '../assets/photos/svc-color-fill.jpg';
 import svcDesign from '../assets/photos/svc-design-fill.jpg';
+import svcPearl from '../assets/photos/services/work-pearl.jpg';
+import svcPastel from '../assets/photos/services/work-pastel.jpg';
+import svcNude from '../assets/photos/services/work-nude.jpg';
+import svcTurquoise from '../assets/photos/services/work-turquoise.jpg';
+import svcNatural from '../assets/photos/services/work-natural.jpg';
+import svcBurgundy from '../assets/photos/services/work-burgundy.jpg';
+import { ChevronLeft, ChevronRight, Pause, Play } from '@lucide/astro';
 import { copy } from '../data/site';
+import { photoPreview } from '../lib/photo-preview';
 
 const frames = [
   { title: 'Молочное покрытие', alt: 'Маникюр с молочным покрытием', src: svcManicure, pos: '50% 35%' },
   { title: 'Лиловое покрытие', alt: 'Лиловое покрытие на ногтях: работа NAZ', src: svcColor, pos: '40% 30%' },
   { title: 'Графичный дизайн', alt: 'Контрастный маникюр: работа NAZ', src: svcDesign, pos: '50% 30%' },
+  { title: 'Жемчужный блеск', alt: 'Розовый маникюр с перламутровым блеском: работа NAZ', src: svcPearl, pos: 'center' },
+  { title: 'Пастельный микс', alt: 'Разноцветный пастельный маникюр: работа NAZ', src: svcPastel, pos: 'center' },
+  { title: 'Нюдовые оттенки', alt: 'Светлый нюдовый маникюр: работа NAZ', src: svcNude, pos: 'center' },
+  { title: 'Бирюзовый акцент', alt: 'Яркий бирюзовый маникюр: работа NAZ', src: svcTurquoise, pos: 'center' },
+  { title: 'Классический френч', alt: 'Светлый френч на ногтях: работа NAZ', src: svcNatural, pos: 'center' },
+  { title: 'Глубокий бордо', alt: 'Маникюр с тёмно-бордовым покрытием: работа NAZ', src: svcBurgundy, pos: 'center' },
 ];
 ---
 
@@ -21,7 +35,8 @@ const frames = [
       <p class="services-note">{copy.servicesNote}</p>
     </header>
 
-    <div class="svc-strip" data-svc-strip role="group" aria-label="Реальные работы NAZ">
+    <div class="svc-gallery" data-svc-gallery data-svc-assembly role="region" aria-roledescription="карусель" aria-label="Реальные работы NAZ">
+    <div class="svc-strip" id="services-works" data-svc-strip tabindex="0" aria-label="Фотографии работ. Листайте пальцем или клавишами влево и вправо">
       {frames.map((frame) => (
         <figure class="svc-item" data-svc-item>
           <div class="svc-frame">
@@ -29,16 +44,24 @@ const frames = [
               src={frame.src}
               alt={frame.alt}
               widths={[360, 560, 800]}
-              sizes="(max-width: 767px) 70vw, 22vw"
+              sizes="(max-width: 767px) 78vw, (max-width: 1100px) 44vw, (max-width: 1440px) 30vw, 432px"
               quality={74}
               loading="lazy"
               decoding="async"
-              style={`object-position: ${frame.pos}`}
+              draggable="false"
+              style={`${photoPreview(frame.src,frame.pos)}object-position: ${frame.pos}`}
             />
+            <span class="svc-hover-zone" aria-hidden="true"></span>
           </div>
           <figcaption class="svc-caption">{frame.title}</figcaption>
         </figure>
       ))}
+    </div>
+    <div class="svc-controls" data-svc-controls>
+      <button class="svc-control" type="button" data-svc-prev aria-label="Предыдущая работа" aria-controls="services-works"><ChevronLeft size={22} stroke-width={1.5} aria-hidden="true" /></button>
+      <button class="svc-control svc-pause" type="button" data-svc-pause aria-label="Приостановить автопрокрутку" aria-controls="services-works"><Pause data-svc-pause-icon size={20} stroke-width={1.5} aria-hidden="true" /><Play data-svc-play-icon size={20} stroke-width={1.5} aria-hidden="true" hidden /></button>
+      <button class="svc-control" type="button" data-svc-next aria-label="Следующая работа" aria-controls="services-works"><ChevronRight size={22} stroke-width={1.5} aria-hidden="true" /></button>
+    </div>
     </div>
   </div>
 </section>

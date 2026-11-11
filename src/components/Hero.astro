@@ -2,6 +2,8 @@
 import { Image } from 'astro:assets';
 import heroScene from '../assets/photos/campaign-portrait.jpg';
 import { copy } from '../data/site';
+import Cta from './Cta.astro';
+import { photoPreview } from '../lib/photo-preview';
 ---
 
 <section class="hero" aria-labelledby="hero-brand">
@@ -12,6 +14,7 @@ import { copy } from '../data/site';
       <span class="hero-sub">Nail Lounge</span>
     </p>
     <h1 class="hero-headline hero-animate" data-page-part>{copy.heroHeadline}</h1>
+    <Cta class="hero-cta" data-page-part />
   </div>
 
   <div class="hero-visual">
@@ -22,12 +25,13 @@ import { copy } from '../data/site';
           class="hero-img"
           src={heroScene}
           alt="Имиджевый кадр NAZ: медный шёлк и маникюр в оттенке каштана"
-          widths={[800, 1200, 1600]}
+          widths={[480, 800, 1200, 1600]}
           sizes="(max-width: 767px) 100vw, 66vw"
           quality={80}
           loading="eager"
           fetchpriority="high"
           decoding="async"
+          style={photoPreview(heroScene)}
         />
       </div>
     </div>

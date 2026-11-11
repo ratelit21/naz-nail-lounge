@@ -1,0 +1,159 @@
+/* Transparent header over the first screen; solid cream after scroll / menu open. */
+.site-header,
+.site-header.header-cream {
+  background: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  transition: background-color .38s ease, border-color .38s ease, box-shadow .38s ease;
+}
+.site-header.is-scrolled,
+html.is-menu-open .site-header {
+  background: var(--canvas);
+  border-bottom-color: var(--border-soft);
+}
+.site-header.header-cream.is-scrolled,
+html.is-menu-open .site-header.header-cream {
+  background: var(--cream);
+  border-bottom-color: var(--border-on-light);
+  box-shadow: 0 5px 18px rgba(8, 37, 31, .055);
+}
+/* Commit the final header paint before capturing the destination, as in the
+   realtor's data-section-transition. The route snapshot handles the dissolve. */
+html[data-route-transition] .site-header,
+html[data-route-transition] .site-header .header-cta {
+  transition: none;
+}
+
+/* Booking: outline on hero; same cream fill as the scrolled header. */
+.site-header .header-cta {
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  opacity: 1;
+  transition:
+    background-color .38s ease,
+    color .38s ease,
+    border-color .3s ease,
+    box-shadow .3s ease;
+}
+.site-header.header-cream.is-scrolled .header-cta,
+html.is-menu-open .site-header.header-cream .header-cta {
+  background: var(--cream);
+  color: var(--textOnLight);
+  border-color: var(--canvas);
+}
+.site-header:not(.header-cream).is-scrolled .header-cta,
+html.is-menu-open .site-header:not(.header-cream) .header-cta {
+  background: var(--creamWarm);
+  color: var(--canvas);
+  border-color: var(--creamWarm);
+}
+
+/* Kynsi-like highlight, NAZ gold accent — no green fill swap on hover. */
+@media (hover: hover) {
+  .site-header .header-cta:hover {
+    opacity: 1;
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 1px rgba(197, 155, 101, .66),
+      0 0 13px rgba(197, 155, 101, .42),
+      inset 0 0 8px rgba(197, 155, 101, .13);
+  }
+  .site-header:not(.is-scrolled) .header-cta:hover {
+    background-color: transparent;
+  }
+  html.is-menu-open .site-header.header-cream .header-cta:hover,
+  .site-header.header-cream.is-scrolled .header-cta:hover {
+    background: var(--cream);
+    color: var(--textOnLight);
+  }
+  html.is-menu-open .site-header:not(.header-cream) .header-cta:hover,
+  .site-header:not(.header-cream).is-scrolled .header-cta:hover {
+    background: var(--creamWarm);
+    color: var(--canvas);
+  }
+}
+.site-header .header-cta:focus-visible {
+  opacity: 1;
+  outline: none;
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px rgba(197, 155, 101, .66),
+    0 0 13px rgba(197, 155, 101, .42);
+}
+
+/* Pull hero paint under the sticky header; keep content clearance via padding. */
+main > .hero {
+  margin-top: calc(-1 * var(--header-h));
+  padding-top: var(--header-h);
+  min-height: calc(650px + var(--header-h));
+  height: min(calc(760px + var(--header-h)), 100svh);
+}
+/* Atmosphere hero box stays as in main: underlap only paints photo under the
+   transparent bar; padding keeps copy where main had it. */
+main > .cream-hero {
+  margin-top: calc(-1 * var(--header-h));
+  padding-top: var(--header-h);
+  min-height: calc(610px + var(--header-h));
+  height: min(calc(720px + var(--header-h)), 100svh);
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  main > .hero {
+    min-height: calc(660px + var(--header-h));
+  }
+}
+@media (max-width: 1023px) {
+  main > .cream-hero {
+    min-height: calc(560px + var(--header-h));
+    height: min(calc(680px + var(--header-h)), 100svh);
+  }
+}
+@media (max-width: 767px) {
+  main > .cream-hero {
+    min-height: calc(520px + var(--header-h));
+    height: min(calc(640px + var(--header-h)), 100svh);
+  }
+  main > .hero {
+    height: auto;
+    min-height: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .site-header .header-cta {
+    transition: none;
+  }
+}
+
+/* Atmosphere only: lower the botanical.
+   Scale the art host — never the img. Page-entry owns img transform and
+   clearProps would otherwise snap from 1 → 1.22 after the wipe. */
+.hero-img { --photo-position: 65% 40%; }
+@media (min-width: 768px) and (max-width: 1100px) {
+  .hero-img { --photo-position: 85% 40%; }
+}
+@media (max-width: 767px) {
+  .hero-img { --photo-position: 64% 35%; }
+}
+@media (min-width: 1024px) {
+  html[data-page="atmosphere"] .cream-hero-art {
+    transform: scale(1.22);
+    transform-origin: center top;
+  }
+  html[data-page="atmosphere"] .cream-hero-art img {
+    object-position: center top;
+    --photo-position: center top;
+  }
+}
+/* Narrow: preserve the overlaid copy and transparent header. Anchor the crop
+   to the clear plaster on the left instead of magnifying the dark flower. */
+@media (max-width: 1023px) {
+  html[data-page="atmosphere"] .cream-hero-art {
+    transform: none;
+  }
+  html[data-page="atmosphere"] .cream-hero-art img {
+    object-position: 30% center;
+    --photo-position: 30% center;
+  }
+}

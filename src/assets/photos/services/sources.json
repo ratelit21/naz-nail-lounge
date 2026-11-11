@@ -1,0 +1,32 @@
+[
+  {
+    "asset": "src/assets/photos/services/work-turquoise.jpg",
+    "source": "studio/assets/photos/services/services_12_30258560322053430.jpg",
+    "attribution": "studio/assets/photos/manifest.json"
+  },
+  {
+    "asset": "src/assets/photos/services/work-natural.jpg",
+    "source": "studio/assets/photos/services/services_09_30258560315604870.jpg",
+    "attribution": "studio/assets/photos/manifest.json"
+  },
+  {
+    "asset": "src/assets/photos/services/work-burgundy.jpg",
+    "source": "studio/assets/photos/services/services_25_30258560322060795.jpg",
+    "attribution": "studio/assets/photos/manifest.json"
+  },
+  {
+    "asset": "src/assets/photos/services/work-pearl.jpg",
+    "source": "studio/assets/photos/services/services_01_30258560336161519.jpg",
+    "attribution": "studio/assets/photos/manifest.json"
+  },
+  {
+    "asset": "src/assets/photos/services/work-pastel.jpg",
+    "source": "studio/assets/photos/services/services_02_30258560348596889.jpg",
+    "attribution": "studio/assets/photos/manifest.json"
+  },
+  {
+    "asset": "src/assets/photos/services/work-nude.jpg",
+    "source": "studio/assets/photos/services/services_03_30258560315983897.jpg",
+    "attribution": "studio/assets/photos/manifest.json"
+  }
+]

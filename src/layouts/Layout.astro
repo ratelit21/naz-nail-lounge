@@ -7,6 +7,8 @@ import poiretLatin from '@fontsource/poiret-one/files/poiret-one-latin-400-norma
 import poiretCyrillic from '@fontsource/poiret-one/files/poiret-one-cyrillic-400-normal.woff2?url';
 import tenorLatin from '@fontsource/tenor-sans/files/tenor-sans-latin-400-normal.woff2?url';
 import '../styles/global.css';
+import '../styles/header-scroll.css';
+import '../styles/browser-canvas.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Preloader from '../components/Preloader.astro';
@@ -65,13 +67,27 @@ const {
         }
       } catch {}
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        if(root.dataset.page === 'home' && !internal) root.classList.add('intro-active');
-        else root.classList.add('page-entering');
+        // Card intro once per browser profile; survives refresh/re-entry, clears with site data.
+        let introSeen = false;
+        try { introSeen = localStorage.getItem('naz-intro-seen') === '1'; } catch {}
+        if(root.dataset.page === 'home' && !internal && !introSeen) {
+          root.classList.add('intro-active');
+          try { localStorage.setItem('naz-intro-seen', '1'); } catch {}
+        } else root.classList.add('page-entering');
+      }
+      // Prepare real in-flow texture before the first body paint, not after
+      // intro photos decode. Fixed viewport covers cannot paint under iOS UI.
+      if (root.classList.contains('intro-active') &&
+          matchMedia('(pointer: coarse)').matches &&
+          CSS.supports('-webkit-touch-callout', 'none')) {
+        root.classList.add('intro-safari-bleed');
       }
       window.nazSafetyTimer = setTimeout(() => {
+        const releaseBleed = root.classList.contains('intro-safari-bleed');
         root.classList.remove('intro-active', 'intro-revealing', 'intro-safari-bleed', 'page-entering');
         root.dataset.pageEntry = 'complete';
         document.querySelector('[data-image-stack]')?.setAttribute('style', 'display:none');
+        if (releaseBleed) window.scrollTo({top:0,left:0,behavior:'instant'});
         document.querySelectorAll('[data-page-part], [data-page-visual] img').forEach(el => {
           ['opacity','transform','clip-path'].forEach(property => el.style.removeProperty(property));
         });
@@ -82,6 +98,14 @@ const {
   <body class={`theme-${theme}`}>
     <a class="skip-link" href="#main">К содержанию</a>
     {nav === 'home' && <Preloader />}
+    <script is:inline>
+      if (document.documentElement.classList.contains('intro-safari-bleed')) {
+        // The extra texture above/below the viewport is already in the flow.
+        // Run synchronously before the page below it is parsed or painted.
+        const offset = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--intro-safari-top')) || 100;
+        window.scrollTo({ top: offset, left: 0, behavior: 'instant' });
+      }
+    </script>
     <div data-site-content>
       <Header nav={nav} theme={nav === 'home' ? 'cream' : theme} />
       <slot />
@@ -89,6 +113,7 @@ const {
     </div>
     <script>
       import '../scripts/page.ts';
+      import '../scripts/header-scroll.ts';
     </script>
   </body>
 </html>

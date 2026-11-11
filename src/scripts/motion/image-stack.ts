@@ -18,7 +18,7 @@ const SAFARI_TOP = 100;
 const SAFARI_BOTTOM = 160;
 
 function needsSafariBleed() {
-  return matchMedia('(max-width:767px)').matches
+  return matchMedia('(pointer:coarse)').matches
     && CSS.supports('-webkit-touch-callout', 'none');
 }
 
@@ -122,7 +122,9 @@ export class ImageStackEntrance {
     root.style.setProperty('--intro-safari-bottom', `${SAFARI_BOTTOM}px`);
     const pin = () => {
       cancelAnimationFrame(this.pinFrame);
-      this.pinFrame = requestAnimationFrame(() => scrollTo(0, SAFARI_TOP));
+      // Never inherit html scroll-behavior:smooth: intermediate positions
+      // expose an unpainted edge before the in-flow texture reaches the glass.
+      scrollTo({top:SAFARI_TOP,left:0,behavior:'instant'});
     };
     this.onPinResize = pin;
     pin();
@@ -138,7 +140,7 @@ export class ImageStackEntrance {
     root.classList.remove('intro-safari-bleed');
     root.style.removeProperty('--intro-safari-top');
     root.style.removeProperty('--intro-safari-bottom');
-    if(this.bleed) scrollTo(0, 0);
+    if(this.bleed) scrollTo({top:0,left:0,behavior:'instant'});
     this.bleed = false;
   }
 

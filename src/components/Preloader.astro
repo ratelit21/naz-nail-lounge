@@ -8,6 +8,7 @@ import design from '../assets/photos/svc-design.jpg';
 import velvet from '../assets/photos/mat-velvet.jpg';
 import stations from '../assets/photos/about-stations.jpg';
 import warm from '../assets/photos/mat-warm.jpg';
+import { photoPreview } from '../lib/photo-preview';
 const images = [portrait, manicure, botanical, lounge, design, velvet, stations, warm];
 ---
 <div class="image-stack-entrance" data-image-stack role="status" aria-label="Открываем NAZ Nail Lounge">
@@ -15,7 +16,7 @@ const images = [portrait, manicure, botanical, lounge, design, velvet, stations,
   <div class="entrance-scene" aria-hidden="true">
     <div class="entrance-group" data-stack-group>
       {images.map(src => <figure class="entrance-card" data-stack-card>
-        <Image src={src} alt="" widths={[192,384,768]} sizes="(min-width:53em) 384px, 288px" quality={76} loading="eager" />
+        <Image src={src} alt="" widths={[192,384,768]} sizes="(min-width:53em) 384px, 288px" quality={76} loading="lazy" style={photoPreview(src)} />
       </figure>)}
     </div>
   </div>

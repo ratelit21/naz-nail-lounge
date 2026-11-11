@@ -67,6 +67,16 @@ const isCrossPage = (href: string) => {
   </div>
 </header>
 
+{/* Backdrop blurs the page below the short menu sheet; click closes. */}
+<button
+  class:list={['nav-backdrop', `nav-backdrop-${theme}`]}
+  type="button"
+  data-nav-backdrop
+  hidden
+  tabindex="-1"
+  aria-label="Закрыть меню"
+></button>
+
 <div class:list={['nav-panel', `nav-panel-${theme}`]} id="nav-panel" data-nav-panel hidden>
   <nav aria-label="Мобильная навигация">
     {nav.map((item) =>

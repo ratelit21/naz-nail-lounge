@@ -27,7 +27,7 @@ export class TeamEntrance {
     this.targets = this.people.map(person=>person.querySelector<HTMLElement>('[data-team-reveal]')!).filter(Boolean);
   }
 
-  start(ready?: Promise<unknown>) {
+  start(ready?: Promise<unknown>, restoreVisible = false) {
     if(this.started || !this.section || !this.targets.length || this.motion.matches) return;
     this.started = true;
     this.active = true;
@@ -62,7 +62,8 @@ export class TeamEntrance {
         const people = this.people.slice(i,i+columns);
         const row = this.targets.slice(i,i+columns);
         // A history restore below a completed row must not hide passed content.
-        if(people[0].getBoundingClientRect().bottom <= 0) continue;
+        const bounds = people[0].getBoundingClientRect();
+        if(bounds.bottom <= 0 || (restoreVisible && bounds.top < innerHeight)) continue;
         gsap.set(row,{yPercent:50,willChange:'transform'});
         this.rows.set(people[0],row);
         // Observe stationary outer cells, not the moving portraits inside them.

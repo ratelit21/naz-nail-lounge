@@ -14,7 +14,7 @@ export class PageEntry {
   private visual: HTMLElement | null;
   private parts: HTMLElement[];
 
-  constructor(scope: ParentNode = document) {
+  constructor(scope: ParentNode = document, private route = false) {
     this.visualHost = scope.querySelector<HTMLElement>('[data-page-visual]');
     this.visual = this.visualHost?.querySelector<HTMLElement>('img') ?? null;
     this.parts = [...scope.querySelectorAll<HTMLElement>('[data-page-part]')];
@@ -22,6 +22,14 @@ export class PageEntry {
 
   /** Freeze hero in pre-assemble state so intro can reveal the page without a hard cut. */
   prepare() {
+    // Internal routes already dissolve between committed, stationary pages.
+    // Keep their photo/copy present in the destination snapshot; a full wipe
+    // here would expose an empty hero, followed by a second entrance beat.
+    if(this.route) {
+      if(this.visual) gsap.set(this.visual,{scale:1.015,opacity:.9,transformOrigin:'50% 50%'});
+      if(this.parts.length) gsap.set(this.parts,{opacity:.7,y:8});
+      return;
+    }
     if(this.visualHost) {
       gsap.set(this.visualHost, {clipPath:'inset(0 100% 0 0)', webkitClipPath:'inset(0 100% 0 0)'});
     }
@@ -42,6 +50,13 @@ export class PageEntry {
       defaults:{ease:'power2.out'},
       onComplete:() => this.finish(),
     });
+
+    if(this.route) {
+      if(this.visual) this.timeline.to(this.visual,{scale:1,opacity:1,duration:.48},0);
+      if(this.parts.length) this.timeline.to(this.parts,{opacity:1,y:0,duration:.38,stagger:.035},0);
+      if(!this.visual && !this.parts.length) this.finish();
+      return done;
+    }
 
     if(this.visualHost) {
       this.timeline.fromTo(this.visualHost,

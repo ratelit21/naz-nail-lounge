@@ -2,22 +2,25 @@
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Materials from '../components/Materials.astro';
+import Cta from '../components/Cta.astro';
 import botanical from '../assets/photos/campaign-botanical.jpg';
-import salon from '../assets/photos/about-lounge.jpg';
+import salon from '../assets/photos/atmosphere/lounge-overview.jpg';
 import { copy } from '../data/site';
+import { photoPreview } from '../lib/photo-preview';
 ---
 
 <Layout theme="cream" nav="atmosphere" title="Атмосфера — Naz Nail Lounge" description="Свет, зелёный бархат, материалы и детали пространства Naz Nail Lounge.">
   <main id="main" class="cream-page">
     <section class="cream-hero" aria-labelledby="cream-brand">
       <div class="cream-hero-art" data-page-visual>
-        <Image id="hero-image" src={botanical} alt="Имиджевый натюрморт NAZ: медный антуриум и светлый травертин" widths={[640,960,1440,1920]} sizes="100vw" quality={82} loading="eager" fetchpriority="high" />
+        <Image id="hero-image" src={botanical} alt="Имиджевый натюрморт NAZ: медный антуриум и светлый травертин" widths={[480,640,960,1440,1920]} sizes="100vw" quality={82} loading="eager" fetchpriority="high" style={photoPreview(botanical)} />
       </div>
       <div class="wrap cream-hero-grid">
         <div class="cream-hero-copy">
           <p class="cream-eyebrow" data-page-part>{copy.atmosphereEyebrow}</p>
           <h1 class="cream-hero-title" id="cream-brand" data-page-part>Атмосфера</h1>
           <p class="cream-hero-tagline" data-page-part>{copy.atmosphereTagline}</p>
+          <Cta class="hero-cta" data-page-part />
         </div>
       </div>
     </section>
@@ -32,7 +35,7 @@ import { copy } from '../data/site';
           <p>{copy.atmosphereBody}</p>
         </div>
         <div class="cream-balance-arch" data-reveal-item>
-          <Image src={salon} alt="Интерьер NAZ: тёплый свет и зелёные кресла" widths={[480,800,1200]} sizes="(max-width:767px) 90vw, 50vw" quality={78} loading="lazy" />
+          <Image src={salon} alt="Интерьер NAZ: лестница, зелёные стены и свет у большого окна" widths={[480,800,1200,1440]} sizes="(max-width:767px) 90vw, 50vw" quality={85} loading="lazy" style={photoPreview(salon,'50% 55%')} />
         </div>
       </div>
     </section>

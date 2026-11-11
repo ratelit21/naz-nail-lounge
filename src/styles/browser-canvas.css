@@ -1,0 +1,79 @@
+/* Let normal page imagery reach Safari's glass instead of registering the
+   transparent, full-width header as a fixed color source. Interactive controls
+   keep their hit areas; the scrolled/menu header keeps its existing fill.
+   Real-device mechanism: https://hawkshift.com/research/ios-26-safari-status-bar
+   No synthetic tint strips, sampled colors or browser-name detection. */
+.footer-canvas-edge { display: none; }
+@media (pointer: coarse) {
+  .site-header:not(.is-scrolled),
+  .site-header:not(.is-scrolled) .header-bar {
+    pointer-events: none;
+  }
+  .site-header a,
+  .site-header button {
+    pointer-events: auto;
+  }
+}
+
+/* The old intro hid root/body overflow after creating a scroll runway. That
+   prevents normal under-chrome composition. Keep the actual document scrollable
+   while the full-screen intro surface consumes gestures. The stage dimensions
+   and card choreography are unchanged.
+   Source: https://1ar.io/updates/safari-26-liquid-glass-web/ */
+@supports (-webkit-touch-callout: none) {
+  @media (pointer: coarse) {
+    /* Same seam treatment as rieltor/app/globals.css:452–474:
+       one canvas color at the status edge; scenery blends into that color
+       over safe-area + 8px .. safe-area + 72px. Only the scene edge is painted;
+       NAZ's transparent header and its scroll/menu states keep their own CSS.
+       CSS applies before client startup and never changes scroll coordinates. */
+    html:not(.intro-active) {
+      --page-edge-bottom: var(--canvas);
+      background: linear-gradient(to bottom, var(--cream) 0 100svh, var(--page-edge-bottom) 100svh 100%), var(--cream);
+    }
+    html[data-theme="cream"]:not(.intro-active) { --page-edge-bottom: var(--cream); }
+    html:not(.intro-active) body { overflow: visible; }
+    html:not(.intro-active) main > :is(.hero, .cream-hero)::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: calc(env(safe-area-inset-top, 0px) + 72px);
+      z-index: 3;
+      pointer-events: none;
+      background: linear-gradient(to bottom, var(--cream) calc(env(safe-area-inset-top, 0px) + 8px), transparent 100%);
+    }
+    /* The root's upper fallback is cream. At the document end, let Safari
+       extend the actual footer color at its lower probe instead. This real
+       sticky box stays in the final 12px of existing padding: no fixed overlay,
+       extra scroll range or movement of the copyright/content. */
+    html:not(.intro-active) .site-footer {
+      --footer-edge-padding: calc(12px + env(safe-area-inset-bottom, 0px));
+    }
+    html:not(.intro-active) .footer-canvas-edge {
+      display: block;
+      position: sticky;
+      top: 0;
+      height: 12px;
+      width: 100vw;
+      margin: calc(var(--footer-edge-padding) - 12px) calc(-1 * var(--pad-x)) calc(-1 * var(--footer-edge-padding));
+      background: inherit;
+      pointer-events: none;
+    }
+    @media (max-width: 767px) {
+      html:not(.intro-active) .site-footer {
+        --footer-edge-padding: calc(16px + env(safe-area-inset-bottom, 0px));
+      }
+    }
+    html.intro-active.intro-safari-bleed {
+      overflow-x: clip;
+      overflow-y: auto;
+      overscroll-behavior: none;
+    }
+    html.intro-active.intro-safari-bleed body {
+      overflow: visible;
+    }
+    html.intro-active.intro-safari-bleed .image-stack-entrance {
+      touch-action: none;
+    }
+  }
+}
